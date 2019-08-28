@@ -1,29 +1,53 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <div class="app">
+    <div class="header-wrapper">
+      <Header />
     </div>
-    <router-view/>
+    <div class="tab-wrapper">
+      <Tab :items="tabItem" />
+    </div>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
-
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import Header from '@/base/header/header.vue'
+import Tab from "@/base/tab/tab.vue"
+export default {
+  data(){
+    return {
+      tabItem:[
+        { name: '推荐', url: '/recommend' },
+        { name: '歌手', url: '/singer' },
+        { name: '榜单', url: '/rank' },
+        { name: 'MV', url: '/mv'}
+      ]
     }
+  },
+
+  components:{
+    Header,
+    Tab
+  }
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const html = document.querySelector('html');
+  let fontSize = window.innerWidth / 10;
+  fontSize = fontSize > 60 ? 60 : fontSize;
+  html.style.fontSize = fontSize + 'px'; 
+})
+
+</script>
+<style lang="scss">
+.app{
+  width:100%;
+  height:100%;
+  background-color: $bg-color;
+  color: $text-color;
+  .header-wrapper{
+    padding: 5px 15px;
   }
 }
 </style>
+

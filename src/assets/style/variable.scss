@@ -1,0 +1,28 @@
+$radio: 375 / 10;
+@function px2rem($px){
+ @return $px / $radio + rem;
+}
+// 颜色定义规范
+$bg-color:#222;
+$bg-color-d:rgba(0, 0, 0, 0.3);
+$bg-hig-color:#333;
+
+$bg-dialog-color:#666;
+
+$theme-color:#1dda9b;
+$theme-color-d:rgba(43, 226, 27, 0.452);
+$theme-sub-color:#096afc;
+
+$text-color:#fff;
+$text-color-d:rgba(255, 255, 255, 0.3);
+$text-color-l:rgba(255, 255, 255, 0.5);
+$text-color-ll:rgba(255, 255, 255, 0.8);
+
+//字体定义规范
+$font-size-s:px2rem(10);
+$font-size:px2rem(12);
+$font-size-m:px2rem(14);
+$font-size-mm:px2rem(16);
+$font-size-l:px2rem(18);
+$font-size-ll:px2rem(22);
+
