@@ -82,7 +82,7 @@ export default {
       }
       if(this.listenScroll){
           this.scroll.on('scroll',(pos)=>{
-              this.$emit('scrolling',pos);
+              this.scroller(pos);
           });
       }
     },

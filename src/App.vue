@@ -9,11 +9,14 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <Player v-if="playing" />
   </div>
 </template>
 <script>
 import Header from '@/base/header/header.vue'
 import Tab from "@/base/tab/tab.vue"
+import Player from "@/components/Player/Player.vue"
+import {mapGetters} from "vuex"
 export default {
   data(){
     return {
@@ -25,10 +28,14 @@ export default {
       ]
     }
   },
+  computed:{
+    ...mapGetters(['playing'])
+  },
 
   components:{
     Header,
-    Tab
+    Tab,
+    Player
   }
 }
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -39,6 +46,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 })
 
 </script>
+
 <style lang="scss">
 .app{
   width:100%;
