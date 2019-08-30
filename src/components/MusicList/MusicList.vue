@@ -24,67 +24,75 @@
       </div>
     </div>
     <div class="list" ref="list">
-      <SongList :songs="songs" :listenScroll="true" @scrolling="scrolling" @selectItem="selectItem" />
+      <SongList
+        :songs="songs"
+        :listenScroll="true"
+        @scrolling="scrolling"
+        @selectItem="selectItem"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import SongList from "@/base/song-list/song-list.vue";
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from "vuex";
 export default {
-  props:{
-      info:{
-          type: Object,
-          default: null,
-      },
-      songs:{
-          type: Array,
-          default(){return []}
+  props: {
+    info: {
+      default() {
+        return {};
       }
+    },
+    songs: {
+      type: Array,
+      default() {
+        return [];
+      }
+    }
   },
   data() {
-    return {
-    };
+    return {};
   },
   computed: {
+    ...mapGetters(["singer"]),
     bgImg() {
-      return `background: url("${this.info &&
-        this.info.pic300}") no-repeat;
+      return `background: url("${this.info && this.info.pic300}") no-repeat;
         background-size: cover`;
     }
   },
-  methods:{
-      scrolling(pos){
-          let y = pos.y;
-          if(y>0){
-              let scale = 1 + y/this.bgH;
-              this.$refs.bgImg.style['transform'] = `scale(${scale})`;
-          }else{
-              if(y< -(this.bgH - this.headerH)){
-                 this.$refs.list.style.top = this.headerH + 'px' 
-                 this.$refs.list.style.paddingTop = (this.bgH - this.headerH) + 'px' 
-              }else{
-                 this.$refs.list.style.top = '0'
-                 this.$refs.list.style.paddingTop = '60%'
-              }
-          }
-      },
-      selectItem(song,index){
-          this.selectPlay({song,index,songs:this.songs});
-      },
-      ...mapActions(['selectPlay'])
+  methods: {
+    scrolling(pos) {
+      let y = pos.y;
+      if (y > 0) {
+        let scale = 1 + y / this.bgH;
+        this.$refs.bgImg.style["transform"] = `scale(${scale})`;
+      } else {
+        if (y < -(this.bgH - this.headerH)) {
+          this.$refs.list.style.top = this.headerH + "px";
+          this.$refs.list.style.paddingTop = this.bgH - this.headerH + "px";
+        } else {
+          this.$refs.list.style.top = "0";
+          this.$refs.list.style.paddingTop = "60%";
+        }
+      }
+    },
+    selectItem(song, index) {
+      this.selectPlay({ song, index, songs: this.songs });
+    },
+    ...mapActions(["selectPlay"])
   },
 
   components: {
     SongList
   },
-  mounted(){
-      this.$nextTick(()=>{
-          this.bgH = this.$refs.bgImg.clientHeight;
-          this.headerH = this.$refs.header.clientHeight;
-      })
-  }
+  mounted() {
+    this.$nextTick(() => {
+      this.bgH = this.$refs.bgImg.clientHeight;
+      this.headerH = this.$refs.header.clientHeight;
+    });
+  },
+  created() {}
 };
 </script>
 <style scoped lang='scss'>
@@ -158,14 +166,14 @@ export default {
       overflow: hidden;
     }
   }
-  .list{
-      width: 100%;  
-      padding:15px 0 0 0;
-      position:fixed;
-      top: px2rem(0);
-      padding-top: 60%;
-      bottom:0;
-      overflow: hidden;
+  .list {
+    width: 100%;
+    padding: 15px 0 0 0;
+    position: fixed;
+    top: px2rem(0);
+    padding-top: 60%;
+    bottom: 0;
+    overflow: hidden;
   }
 }
 </style>

@@ -1,16 +1,11 @@
 <template>
   <!--根组件-->
-  <transition name="slide">
-    <div class="player" v-if="playing">
-      <div
-        v-show="fullScrenn"
-        class="player-full"
-        :style="bgStyle"
-      >
-        <div
-          class="bgImg"
-          :style="bgStyle"
-        ></div>
+  <div class="player">
+    <transition name="slide-full">
+      <div v-show="fullScrenn" class="player-full">
+        <div class="bgImg">
+          <img :src="currentSong.albumpic" width="100%" height="100%" />
+        </div>
         <div class="header">
           <span class="back" @click.prevent="back">
             <i class="iconfont icon-downarrow"></i>
@@ -24,40 +19,39 @@
           <div class="swiper-container" ref="swiper">
             <div class="swiper-wrapper">
               <div class="swiper-slide cd">
-                <div class="cd-wrapper">
+                <div class="cd-wrapper play" :class="{run:this.playing,pause:!this.playing}">
                   <div class="cd-img">
-                    <img
-                      :src="currentSong.albumpic"
-                      width="100%"
-                      height="100%"
-                      alt
-                    />
+                    <img :src="currentSong.albumpic" width="100%" height="100%" alt />
                   </div>
                 </div>
                 <div class="commont">
                   <span class="commont-btn">
                     <i class="iconfont icon-commont"></i>
                   </span>
+                  <span class="current-lyric">当前歌词</span>
                 </div>
-                <span class="current-lyric">当前歌词</span>
               </div>
               <div class="swiper-slide lyric">这里是歌词</div>
             </div>
           </div>
         </div>
         <div class="bottom">
-          <div class="progress-wrapper">进度条-----------</div>
+          <div class="progress-wrapper">
+            <span class="currentTime">{{formatTime(currentTime)}}</span>
+            <Progress :percent="percent" @barTouchEnd="barTouchEnd" />
+            <span class="duration">{{formatTime(currentSong.duration)}}</span>
+          </div>
           <div class="btn">
             <div class="play-mode">
               <i class="iconfont icon-suiji"></i>
             </div>
-            <div class="prev">
+            <div class="prev" @click.stop="prev">
               <i class="iconfont icon-kuaitui"></i>
             </div>
-            <div class="play">
-              <i class="iconfont icon-zanting"></i>
+            <div class="play" @click.stop="togglePlay">
+              <i class="iconfont" :class="playIcon"></i>
             </div>
-            <div class="next">
+            <div class="next" @click.stop="next">
               <i class="iconfont icon-kuaijin"></i>
             </div>
             <div class="favorite">
@@ -66,38 +60,42 @@
           </div>
         </div>
       </div>
+    </transition>
+    <transition name="slide">
       <div class="player-mini" v-show="!fullScrenn" @click.prevent="open">
-        <div class="mini-cd">
-          <img
-            src="http://img1.kwcdn.kuwo.cn/star/userpl2015/43/57/1566796820164_414900543_500.jpg"
-            width="80%"
-            height="80%"
-            alt
-          />
+        <div class="mini-cd play" :class="{run:this.playing,pause:!this.playing}">
+          <img :src="currentSong.albumpic" width="80%" height="80%" />
         </div>
         <div class="info">
-          <span class="song-name">极乐净土</span>
-          <span class="cur-lyric">尽享受这狂欢无尽的黑夜</span>
+          <span class="song-name">{{currentSong.songname}}</span>
+          <span class="cur-lyric">{{currentSong.artist}}</span>
         </div>
         <div class="cicle-progress-wrapper">
-          <div class="cicle"></div>
+          <div class="cicle" @click.stop="togglePlay">
+            <i class="iconfont" :class="playIcon"></i>
+          </div>
         </div>
         <div class="playlist">
           <i class="iconfont icon-liebiao"></i>
         </div>
       </div>
-      <audio ref="audio" :src="currentSong.url || ''" @play="canplay"></audio>
-    </div>
-  </transition>
+    </transition>
+    <audio ref="audio" :src="currentSong.url || ''" @play="canplay" @timeupdate="timeupdate"></audio>
+  </div>
 </template>
 
 <script>
+import Vue from "vue";
 import Swiper from "swiper";
+import { getSongUrl } from "@/api/song";
 import { mapGetters, mapMutations } from "vuex";
+import Progress from "@/base/progress/progress.vue";
 export default {
   data() {
     return {
-      onReady: false
+      onReady: false,
+      currentTime: 0,
+      percent: 0,
     };
   },
   methods: {
@@ -110,18 +108,74 @@ export default {
     canplay() {
       this.onReady = true;
     },
+    togglePlay() {
+      if (!this.playing) {
+        this.setPlaying(true);
+      } else {
+        this.setPlaying(false);
+      }
+    },
+    next() {
+      if (!this.onReady) {
+        return;
+      }
+      let index = this.currentIndex + 1;
+      if (!this.onReady) {
+        return;
+      }
+      index = index === this.playlist.length - 1 ? 0 : index;
+      this.setCurrentIndex(this.currentIndex + 1);
+    },
+    prev() {
+      if (!this.onReady) {
+        return;
+      }
+      let index = this.currentIndex - 1;
+      if (!this.onReady) {
+        return;
+      }
+      index = index < 0 ? this.playlist.length - 1 : index;
+      this.setCurrentIndex(index);
+    },
+    pad(val, n = 2) {
+      let len = val.toString().length;
+      while (len < 2) {
+        val = "0" + val;
+        len++;
+      }
+      return val;
+    },
+    formatTime(time) {
+      let minute = (time / 60) | 0;
+      let second = time % 60 | 0;
+      return `${this.pad(minute)}:${this.pad(second)}`;
+    },
+    timeupdate(e) {
+      this.currentTime = e.target.currentTime;
+      this.percent = this.currentTime / this.currentSong.duration;
+    },
+    barTouchEnd(percent){
+      this.$refs.audio.currentTime = this.currentSong.duration * percent;
+    },
 
     ...mapMutations({
       setPlaying: "SET_PLAYING",
-      setFullScrenn: "SET_FULLSCRENN"
+      setFullScrenn: "SET_FULLSCRENN",
+      setCurrentIndex: "SET_CURRENTINDEX"
     })
   },
   mounted() {
+    window.addEventListener("resize", () => {
+      this.swiper && this.swiper.updateSize();
+    });
     this.$nextTick(() => {
       this.swiper = new Swiper(this.$refs.swiper);
     });
   },
   computed: {
+    playIcon() {
+      return this.playing ? "icon-bofang" : "icon-zanting";
+    },
     ...mapGetters([
       "playing",
       "fullScrenn",
@@ -129,52 +183,62 @@ export default {
       "mode",
       "currentSong",
       "currentIndex"
-    ]),
-    bgStyle(){
-        return `background: url(${this.currentSong.albumpic}) no-repeat center center;background-size:100% 100%`
-    }
+    ])
   },
 
-  watch:{
-      currentSong(){
-          this.currentSong.url && this.$refs.audio.play();
-      },
-      playing(){
-
-      },
-
+  watch: {
+    currentSong: {
+      immediate: true,
+      handler(song, oldSong) {
+        if (!this.playing) {
+          this.togglePlay();
+        }
+        if (!song.url) {
+          getSongUrl(song.rid).then(res => {
+            Vue.set(song, "url", res.url);
+          });
+        }
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          song.url && this.$refs.audio.play();
+        }, 1000);
+      }
+    },
+    playing(p) {
+      p ? this.$refs.audio.play() : this.$refs.audio.pause();
+    }
+  },
+  components: {
+    Progress
   }
 };
 </script>
 
 <style scoped lang='scss'>
-.slide-enter-active,
-.slide-leave-active {
-  .player-full,
-  .player-mini {
-    transition: all 0.3s;
-  }
-}
-.slide-enter,
-.slide-leave-to {
-  .player-full,
-  .player-mini {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
 .player {
   position: relative;
   .player-full {
+    &.slide-full-enter-active,
+    &.slide-full-leave-active {
+      transition: all 0.3s;
+    }
+    &.slide-full-enter,
+    &.slide-full-leave-to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
     width: 100vw;
     height: 100vh;
     font-size: $font-size-mm;
     .bgImg {
-      position: fixed;
+      position: absolute;
       top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       filter: blur(20px);
+      z-index: -1;
+      transform: scale(1.1);
     }
     .header {
       height: px2rem(48);
@@ -210,7 +274,7 @@ export default {
       width: 100%;
       position: fixed;
       top: px2rem(48);
-      bottom: px2rem(150);
+      bottom: px2rem(170);
       .swiper-container {
         width: 100%;
         height: 100%;
@@ -218,16 +282,14 @@ export default {
           position: relative;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: space-around;
           align-items: center;
-          .current-lyric {
-            padding-top: 20px;
-          }
           .commont {
-            position: absolute;
-            bottom: 0;
+            bottom: px2rem(23);
             left: 20px;
             .iconfont {
+              position: absolute;
+              left: px2rem(20);
               font-size: $font-size-ll;
             }
           }
@@ -236,26 +298,48 @@ export default {
             border-radius: 50%;
             overflow: hidden;
             border: solid 15px $text-color-d;
-            width: px2rem(300);
-            height: px2rem(300);
+            width: px2rem(270);
+            height: px2rem(270);
+            &.play {
+              animation: rotate 30s infinite linear;
+            }
+            &.pause {
+              animation-play-state: paused;
+            }
+            &.run {
+              animation-play-state: running;
+            }
           }
         }
       }
     }
     .bottom {
-      position: absolute;
+      position: fixed;
       bottom: 0;
       display: flex;
       width: 100%;
-      justify-content: center;
+      justify-content: space-around;
       align-items: center;
       flex-direction: column;
-      bottom: px2rem(85);
+      bottom: px2rem(50);
       .progress-wrapper {
-        transform: translateY(20px);
+        width: 100%;
+        transform: translateY(px2rem(-10));
+        position: relative;
+        display: flex;
+        align-items: center;
+        .currentTime {
+          position: absolute;
+          left: 0;
+          left: px2rem(10);
+        }
+        .duration {
+          position: absolute;
+          right: px2rem(10);
+        }
       }
       .btn {
-        transform: translateY(40px);
+        transform: translateY(px2rem(10));
         width: 100%;
         display: flex;
         justify-content: space-around;
@@ -283,6 +367,15 @@ export default {
     bottom: 0;
     display: flex;
     align-items: center;
+    &.slide-enter-active,
+    &.slide-leave-active {
+      transition: all 0.3s;
+    }
+    &.slide-enter,
+    &.slide-leave-to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
     .mini-cd {
       height: 100%;
       width: px2rem(48);
@@ -292,7 +385,7 @@ export default {
       justify-content: center;
       align-items: center;
       &.play {
-        animation: rotate 6s infinite linear;
+        animation: rotate 30s infinite linear;
       }
       &.pause {
         animation-play-state: paused;
@@ -312,10 +405,19 @@ export default {
       position: absolute;
       right: 50px;
       .cicle {
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .iconfont {
+          z-index: -1;
+          font-size: 30px;
+        }
         width: 30px;
         height: 30px;
-        border: solid 3px $text-color;
-        border-radius: 50%;
+        line-height: 30px;
+        border: solid 2px $text-color;
+        border-radius: 100%;
       }
     }
     .info {
