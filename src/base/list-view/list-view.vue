@@ -1,6 +1,9 @@
 <template>
   <!--根组件-->
   <div class="list-view">
+    <div class="loading-wrapper" v-if="!datas.length">
+      <loading />
+    </div>
     <div class="list">
       <scroll :data="datas" :listenScroll="true" :scroller="scrolling" :probeType="3" ref="scroll">
         <ul>
@@ -8,7 +11,7 @@
             <h2 class="title">{{group.title}}</h2>
             <ul>
               <li v-for="(singer,index) in group.items" :key="index" @click="selectItem(singer)">
-                <img width="48" height="48" :src="singer.pic70" />
+                <img width="48" height="48" v-lazy="singer.pic70" />
                 <span class="name">{{singer.name}}</span>
               </li>
             </ul>
@@ -32,7 +35,6 @@
 </template>
 
 <script>
-import { setTimeout } from 'timers';
 export default {
   created(){
     this.touchs = {}
@@ -111,6 +113,13 @@ export default {
 .list-view {
   width: 100%;
   height: 100%;
+  position: relative;
+  .loading-wrapper {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
   .list {
     left: 0;
     right: 0;

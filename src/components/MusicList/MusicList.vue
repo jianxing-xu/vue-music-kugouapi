@@ -12,11 +12,11 @@
     <div class="filter" :style="bgImg" ref="bgImg"></div>
     <div class="content">
       <div class="avatar">
-        <img :src="info.pic300" alt />
+        <img :src="info.pic300 || info.img" alt />
       </div>
       <div class="info">
         <span class="name" v-html="info.name"></span>
-        <span class="fans-num">粉丝数：{{info.fans}}</span>
+        <span class="fans-num">歌曲数：{{info.musicNum || info.total}}</span>
         <div class="playAll">
           <i class="iconfont icon-zanting"></i>
           <span class="text">播放全部</span>
@@ -30,6 +30,9 @@
         @scrolling="scrolling"
         @selectItem="selectItem"
       />
+      <div class="loading-wrapper" v-if="!songs.length">
+        <loading />
+      </div>
     </div>
   </div>
 </template>
@@ -57,7 +60,8 @@ export default {
   computed: {
     ...mapGetters(["singer"]),
     bgImg() {
-      return `background: url("${this.info && this.info.pic300}") no-repeat;
+      return `background: url("${(this.info && this.info.pic300) ||
+        this.info.img}") no-repeat;
         background-size: cover`;
     }
   },
@@ -113,9 +117,14 @@ export default {
       padding-left: 15px;
     }
     .title {
+      text-align: center;
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
+      width: px2rem(250);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .filter {
@@ -135,12 +144,17 @@ export default {
       flex-direction: column;
       .name {
         font-size: $font-size-l;
+        width: px2rem(200);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .fans-num {
         margin: 10px 0;
         color: $text-color-l;
       }
       .playAll {
+        width: px2rem(90);
         font-size: $font-size-m;
         display: flex;
         padding: auto;
@@ -167,6 +181,12 @@ export default {
     }
   }
   .list {
+    .loading-wrapper {
+      position: absolute;
+      top: 60%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
     width: 100%;
     padding: 15px 0 0 0;
     position: fixed;

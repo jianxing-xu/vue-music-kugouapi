@@ -101,13 +101,13 @@ export default {
             border-radius: 100%;
             position: absolute;
             top: 50%;
-            transform: translate(200px,-50%);
+            transform: translate(0,-50%);
         }
         .progress-inner{
             position: absolute;
             left:0; 
             height: 100%;
-            width: 60%;
+            width: 0;
             background-color: #fff;
         }
     }

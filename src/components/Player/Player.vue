@@ -26,12 +26,24 @@
                 </div>
                 <div class="commont">
                   <span class="commont-btn">
-                    <i class="iconfont icon-commont"></i>
+                    <i class="iconfont icon-commont" @click="showCommont"></i>
                   </span>
-                  <span class="current-lyric">当前歌词</span>
+                  <span class="current-lyric">{{currentLyric || ' '}}</span>
                 </div>
               </div>
-              <div class="swiper-slide lyric">这里是歌词</div>
+              <div class="swiper-slide lyric" v-if="lyric">
+                <scroll :data="lyric.lines" ref="lyricScroll">
+                  <div>
+                    <p
+                      ref="lyricGroup"
+                      :class="{'current-line':index==currentLine}"
+                      class="lyric-line"
+                      v-for="(line, index) in lyric.lines"
+                      :key="index"
+                    >{{line.txt}}</p>
+                  </div>
+                </scroll>
+              </div>
             </div>
           </div>
         </div>
@@ -42,8 +54,8 @@
             <span class="duration">{{formatTime(currentSong.duration)}}</span>
           </div>
           <div class="btn">
-            <div class="play-mode">
-              <i class="iconfont icon-suiji"></i>
+            <div class="play-mode" @click="changeMode">
+              <i class="iconfont" :class="modeIcon"></i>
             </div>
             <div class="prev" @click.stop="prev">
               <i class="iconfont icon-kuaitui"></i>
@@ -68,34 +80,50 @@
         </div>
         <div class="info">
           <span class="song-name">{{currentSong.songname}}</span>
-          <span class="cur-lyric">{{currentSong.artist}}</span>
+          <span class="cur-lyric">{{currentLyric || currentSong.artist}}</span>
         </div>
-        <div class="cicle-progress-wrapper">
-          <div class="cicle" @click.stop="togglePlay">
+        <div class="cicle-progress-wrapper" @click.stop="togglePlay">
+          <progress-circle :radio="radio" :percent="percent">
             <i class="iconfont" :class="playIcon"></i>
-          </div>
+          </progress-circle>
         </div>
         <div class="playlist">
           <i class="iconfont icon-liebiao"></i>
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url || ''" @play="canplay" @timeupdate="timeupdate"></audio>
+    <audio
+      ref="audio"
+      :src="currentSong.url || ''"
+      @play="canplay"
+      @timeupdate="timeupdate"
+      @ended="playEnd"
+    ></audio>
+      <Commont ref="commont" :commont="currentSong.commont || {}" @scrollToEnd="scrollToEnd" />
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import Swiper from "swiper";
-import { getSongUrl } from "@/api/song";
+import Lyric from "lyric-parser";
+import { playMode } from "@/assets/js/config";
+import { getSongUrl, getCommont} from "@/api/song";
 import { mapGetters, mapMutations } from "vuex";
 import Progress from "@/base/progress/progress.vue";
+import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
+import Commont from "@/components/Commont/Commont.vue"
 export default {
   data() {
     return {
+      radio: 33,
       onReady: false,
       currentTime: 0,
       percent: 0,
+      lyric: null,
+      currentLyric: "",
+      currentLine: 0,
+      page: 1,
     };
   },
   methods: {
@@ -109,6 +137,7 @@ export default {
       this.onReady = true;
     },
     togglePlay() {
+      this.lyric && this.lyric.togglePlay();
       if (!this.playing) {
         this.setPlaying(true);
       } else {
@@ -137,9 +166,19 @@ export default {
       index = index < 0 ? this.playlist.length - 1 : index;
       this.setCurrentIndex(index);
     },
+    changeMode() {
+      let mode = this.mode;
+      mode = (mode + 1) % 3;
+      console.log(mode);
+      this.setPlayMode(mode);
+    },
+    loop() {
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
+    },
     pad(val, n = 2) {
       let len = val.toString().length;
-      while (len < 2) {
+      while (len < n) {
         val = "0" + val;
         len++;
       }
@@ -154,14 +193,55 @@ export default {
       this.currentTime = e.target.currentTime;
       this.percent = this.currentTime / this.currentSong.duration;
     },
-    barTouchEnd(percent){
+    playEnd() {
+      if (this.mode === playMode.loop) {
+        this.loop();
+      } else {
+        this.next();
+      }
+    },
+    barTouchEnd(percent) {
       this.$refs.audio.currentTime = this.currentSong.duration * percent;
+      this.lyric && this.lyric.seek(this.$refs.audio.currentTime * 1000);
+    },
+    getLyric(str) {
+      let _this = this;
+      if(str.code === -1){
+        console.log('no lyric');
+        this.currentLyric = str.text;
+        return ;
+      }
+      this.lyric = new Lyric(str, ({ lineNum, txt }) => {
+        if (lineNum < 5) {
+          this.$refs.lyricScroll.scrollToElement(this.$refs.lyricGroup[0]);
+        } else {
+          this.$refs.lyricScroll.scrollToElement(
+            this.$refs.lyricGroup[lineNum - 5],
+            300
+          );
+        }
+        this.currentLyric = txt;
+        this.currentLine = lineNum;
+      });
+      this.lyric.play();
+    },
+    showCommont(){
+      this.$refs.commont.show();
+    },
+    scrollToEnd(){
+      this.page ++
+      getCommont(this.currentSong.rid,this.page).then( res => {
+          let commont = res;
+          res.rows = this.currentSong.commont.rows.concat(res.rows)
+          Vue.set(this.currentSong,'commont', JSON.parse(JSON.stringify(res)));
+      })
     },
 
     ...mapMutations({
       setPlaying: "SET_PLAYING",
       setFullScrenn: "SET_FULLSCRENN",
-      setCurrentIndex: "SET_CURRENTINDEX"
+      setCurrentIndex: "SET_CURRENTINDEX",
+      setPlayMode: "SET_PLAYMODE"
     })
   },
   mounted() {
@@ -169,12 +249,21 @@ export default {
       this.swiper && this.swiper.updateSize();
     });
     this.$nextTick(() => {
-      this.swiper = new Swiper(this.$refs.swiper);
+      this.swiper = new Swiper(this.$refs.swiper, {
+        observer: true
+      });
     });
   },
   computed: {
     playIcon() {
       return this.playing ? "icon-bofang" : "icon-zanting";
+    },
+    modeIcon() {
+      return this.mode === playMode.sequence
+        ? "icon-liebiaoxunhuan"
+        : this.mode === playMode.random
+        ? "icon-suiji"
+        : "icon-danquxunhuan";
     },
     ...mapGetters([
       "playing",
@@ -190,8 +279,16 @@ export default {
     currentSong: {
       immediate: true,
       handler(song, oldSong) {
+        this.lyric && this.lyric.stop();
+        this.lyric = null;
         if (!this.playing) {
           this.togglePlay();
+        }
+        if (!song.lyric) {
+          song.getSongLyric();
+        }
+        if(!song.commont){
+          song.getSongCommont(this.page);
         }
         if (!song.url) {
           getSongUrl(song.rid).then(res => {
@@ -200,6 +297,7 @@ export default {
         }
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
+          this.getLyric(song.lyric);
           song.url && this.$refs.audio.play();
         }, 1000);
       }
@@ -209,7 +307,9 @@ export default {
     }
   },
   components: {
-    Progress
+    Progress,
+    ProgressCircle,
+    Commont
   }
 };
 </script>
@@ -220,12 +320,11 @@ export default {
   .player-full {
     &.slide-full-enter-active,
     &.slide-full-leave-active {
-      transition: all 0.3s;
+      transition: all 0.4s ease;
     }
     &.slide-full-enter,
     &.slide-full-leave-to {
       transform: translateY(100%);
-      opacity: 0;
     }
     width: 100vw;
     height: 100vh;
@@ -239,6 +338,10 @@ export default {
       filter: blur(20px);
       z-index: -1;
       transform: scale(1.1);
+      background: rgba(0,0,0,1);
+      img{
+        opacity: .7;
+      }
     }
     .header {
       height: px2rem(48);
@@ -260,10 +363,15 @@ export default {
         width: 100%;
         display: flex;
         flex-direction: column;
-        position: absolute;
+        align-items: center;
         text-align: center;
         justify-content: space-evenly;
-
+        .singer, .title{
+          width: px2rem(200);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
         .singer {
           font-size: $font-size;
           color: $text-color-l;
@@ -276,6 +384,19 @@ export default {
       top: px2rem(48);
       bottom: px2rem(170);
       .swiper-container {
+        .lyric {
+          text-align: center;
+          line-height: 2.5;
+          color: $text-color-l;
+          font-size: $font-size-m;
+          .lyric-line {
+            &.current-line {
+              color: $text-color;
+              transform: scale(1.2);
+              transition: transform 0.3s;
+            }
+          }
+        }
         width: 100%;
         height: 100%;
         .cd {
@@ -287,6 +408,16 @@ export default {
           .commont {
             bottom: px2rem(23);
             left: 20px;
+            .current-lyric {
+              display: inline-block;
+              text-align: center;
+              width: px2rem(190);
+              font-size: $font-size-mm;
+              color: $text-color-ll;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
             .iconfont {
               position: absolute;
               left: px2rem(20);
@@ -404,21 +535,15 @@ export default {
     .cicle-progress-wrapper {
       position: absolute;
       right: 50px;
-      .cicle {
-        box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .iconfont {
-          z-index: -1;
-          font-size: 30px;
-        }
-        width: 30px;
-        height: 30px;
-        line-height: 30px;
-        border: solid 2px $text-color;
-        border-radius: 100%;
+      .iconfont {
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        z-index: -1;
+        font-size: 30px;
+        transform: scale(1.1);
       }
+    
     }
     .info {
       height: 100%;
@@ -430,7 +555,12 @@ export default {
         font-size: $font-size-m;
       }
       .cur-lyric {
+        width: px2rem(200);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space:nowrap;
         font-size: $font-size;
+        color: $text-color-ll;
       }
     }
   }

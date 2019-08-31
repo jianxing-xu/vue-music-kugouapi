@@ -10,7 +10,13 @@ export default new Router({
   routes: [
     {
       path: '/recommend',
-      component: () => import('@/views/Recommend/Recommend.vue')
+      component: () => import('@/views/Recommend/Recommend.vue'),
+      children:[
+        {
+          path: ':id',
+          component: () => import('@/components/DiscDetail/DiscDetail.vue')
+        }
+      ]
     },
     {
       path: '/singer',

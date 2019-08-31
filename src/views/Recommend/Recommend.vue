@@ -8,8 +8,13 @@
           <div class="disc-wrapper">
             <h2 class="h2">歌单推荐</h2>
             <div class="disc-list" v-if="disc.length">
-              <div class="disc-item" v-for="(item, index) in disc" :key="index">
-                <img width="68" height="68" :src="item.img" />
+              <div
+                class="disc-item"
+                v-for="(item, index) in disc"
+                :key="index"
+                @click="selectItem(item)"
+              >
+                <img width="68" height="68" v-lazy="item.img" />
                 <div class="info">
                   <h2 class="title">{{item.name}}</h2>
                   <span class="desc">{{item.uname}}</span>
@@ -19,7 +24,13 @@
           </div>
         </div>
       </scroll>
+      <div class="loading-wrapper" v-if="!sliders.concat(disc).length">
+        <loading />
+      </div>
     </div>
+    <transition name="slide">
+        <router-view></router-view>
+      </transition>
   </div>
 </template>
 
@@ -27,6 +38,7 @@
 import Slider from "@/base/slider/slider.vue";
 import { getSlider, getDisc } from "@/api/recommend";
 import { ERR_OK } from "@/api/config";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -34,6 +46,7 @@ export default {
       disc: []
     };
   },
+  computed: {},
   components: {
     Slider
   },
@@ -51,7 +64,17 @@ export default {
           this.disc = res.data.data;
         }
       });
-    }
+    },
+    selectItem(disc) {
+      this.setDisc(disc);
+      this.$router.push({
+        path: `/recommend/${disc.id}`
+      });
+    },
+
+    ...mapMutations({
+      setDisc: "SET_DISC"
+    })
   },
   created() {
     this._getSlider();
@@ -65,12 +88,26 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  .slide-enter,
+  .slide-leave-to {
+    transform: translateX(100%);
+  }
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: all 0.4s ease;
+  }
   .content {
-    width:100%;
+    width: 100%;
     position: fixed;
     top: px2rem(90);
-    bottom:0;
+    bottom: 0;
     overflow: hidden;
+    .loading-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
   .disc-wrapper {
     box-sizing: border-box;

@@ -3,7 +3,7 @@
   <scroll class="song-list" v-if="songs" ref="songscroll" :data="songs" :listenScroll="listenScroll" :probeType="3" :scroller="scrolling">
     <ul>
       <li class="song-item" v-for="(song, index) in songs" :key="index" @click="selectItem(song,index)">
-        <div class="sort">{{index}}</div>
+        <div class="sort">{{index+1}}</div>
         <div class="info">
           <h2 class="title" v-html="song.songname"></h2>
           <span class="text" v-html="song.artist"></span>
@@ -66,6 +66,12 @@ export default {
         justify-content: space-evenly;
         height: 100%;
         margin-left: 15px;
+        .title,.text{
+          width: px2rem(300);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .text{
             font-size: $font-size   ;
             color: $text-color-d;

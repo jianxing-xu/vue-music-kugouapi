@@ -1,5 +1,5 @@
 export const playMode = {
-    sequence: 1,
-    radom: 2,
-    loop: 3
+    sequence: 0,
+    random: 1,
+    loop: 2
 }
