@@ -30,11 +30,31 @@ export default new Router({
     },
     {
       path: '/rank',
-      component: () => import('@/views/Rank/Rank.vue')
+      component: () => import('@/views/Rank/Rank.vue'),
+      children:[
+        {
+          path: ':id',
+          component: () => import('@/components/BangDetail/BangDetail.vue')
+        }
+      ]
     },
     {
       path: '/mv',
-      component: () => import('@/views/MV/MV.vue')
+      component: () => import('@/views/MV/MV.vue'),
+      children:[
+        {
+          path: ':id',
+          component: () => import('@/components/MVList/MVList.vue'),
+        },
+        {
+          path: '',
+          redirect: '236682871'
+        }
+      ]
+    },
+    {
+      path: '',
+      redirect: '/recommend'
     }
   ]
 })

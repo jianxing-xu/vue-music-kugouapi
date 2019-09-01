@@ -1,6 +1,7 @@
 export default {
     singer: (state) => state.singer,
     disc: (state) => state.disc,
+    bang: (state) => state.bang,
     playing: (state) => state.playing,
     fullScrenn: (state) => state.fullScrenn,
     playlist: (state) => state.playlist,

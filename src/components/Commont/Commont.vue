@@ -1,12 +1,12 @@
 <template>
   <!--根组件-->
-  <transition name="commont">
+  <transition :name="ani">
     <div class="commont" v-if="showCommont && commont">
-      <div class="header">
+      <div class="header" v-if="header">
         <div class="back" @click="hide">
           <i class="iconfont icon-leftarrow"></i>
         </div>
-        <div class="title">评论</div>
+        <div class="title"></div>
       </div>
       <div class="commont-wrapper" v-if="commont.rows">
         <div class="new-commont">
@@ -21,7 +21,7 @@
                   <li class="commont-item" v-for="(item, index) in commont.rows" :key="index">
                     <div class="avatar">
                       <img
-                        v-lazy="item.u_pic || item.reply && item.reply.u_pic || ''"
+                        v-lazy="item.u_pic || (item.reply?item.reply.u_pic:'') || ''"
                         width="100%"
                         height="100%"
                       />
@@ -64,6 +64,14 @@ export default {
       default() {
         return {};
       }
+    },
+    header:{
+      type: Boolean,
+      default: true,
+    },
+    ani:{
+      type: String,
+      default: 'commont'
     }
   },
   data() {
@@ -93,6 +101,9 @@ export default {
         this.$emit("scrollToEnd");
       }
     }
+  },
+  mounted(){
+    this.show();
   }
 };
 </script>
@@ -118,7 +129,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: $bg-color;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   color: $text-color-l;
@@ -129,6 +140,7 @@ export default {
     display: flex;
     position: relative;
     .back {
+      z-index: 10;
       padding-left: 10px;
     }
     .title {
@@ -149,7 +161,9 @@ export default {
         display: flex;
         align-items: center;
         font-weight: lighter;
+        justify-content: center;
         font-size: $font-size-m;
+        padding-top: 20px;
         .text {
           padding-right: 15px;
           font-size: $font-size-ll;
@@ -158,8 +172,8 @@ export default {
       }
       .list {
         width: 100%;
-        position: fixed;
-        top: px2rem(48);
+        position: absolute;
+        top:0;
         bottom: 0;
         overflow: hidden;
         .loading-wrapper {

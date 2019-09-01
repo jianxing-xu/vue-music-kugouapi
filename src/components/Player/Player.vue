@@ -99,7 +99,7 @@
       @timeupdate="timeupdate"
       @ended="playEnd"
     ></audio>
-      <Commont ref="commont" :commont="currentSong.commont || {}" @scrollToEnd="scrollToEnd" />
+      <Commont v-if="clickCommont" ref="commont" :commont="currentSong.commont || {}" @scrollToEnd="scrollToEnd" />
   </div>
 </template>
 
@@ -124,6 +124,7 @@ export default {
       currentLyric: "",
       currentLine: 0,
       page: 1,
+      clickCommont: false,
     };
   },
   methods: {
@@ -226,11 +227,12 @@ export default {
       this.lyric.play();
     },
     showCommont(){
+      this.clickCommont = true;
       this.$refs.commont.show();
     },
     scrollToEnd(){
       this.page ++
-      getCommont(this.currentSong.rid,this.page).then( res => {
+      getCommont(15,this.currentSong.rid,this.page).then( res => {
           let commont = res;
           res.rows = this.currentSong.commont.rows.concat(res.rows)
           Vue.set(this.currentSong,'commont', JSON.parse(JSON.stringify(res)));
@@ -320,7 +322,7 @@ export default {
   .player-full {
     &.slide-full-enter-active,
     &.slide-full-leave-active {
-      transition: all 0.4s ease;
+      transition: all 0.5s ease;
     }
     &.slide-full-enter,
     &.slide-full-leave-to {

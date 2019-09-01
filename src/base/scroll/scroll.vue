@@ -42,7 +42,11 @@ export default {
     beforeScroll:{
       type: Boolean,
       default: false,
-    }
+    },
+    scrollX:{
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -56,7 +60,9 @@ export default {
       }
       this.scroll = new BScroll(this.$refs.wrapper,{
           probeType: this.probeType,
-          click: this.click
+          click: this.click,
+          scrollX: this.scrollX,
+          scrollY: !this.scrollX,
       });
       //监听滚动到底部后，派发事件
       if(this.purpul){

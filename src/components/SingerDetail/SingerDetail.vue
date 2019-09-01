@@ -37,7 +37,6 @@ export default {
   },
 
   created() {
-    console.log(this.singer);
     if (!this.singer.id) {
       return this.$router.back();
     }

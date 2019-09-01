@@ -23,14 +23,14 @@ export function getLyric(rid) {
             return Promise.resolve(res.data);
         })
 }
-export function getCommont(sid,page){
+export function getCommont(digest,sid,page){
     return axios.get('http://www.kuwo.cn/comment',{
         params:{
             type:'get_comment',
             f:'web',
             page,
             rows:'20',
-            digest:15,
+            digest,
             sid,
             uid:0,
             prod:'newWeb'

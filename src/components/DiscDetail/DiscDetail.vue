@@ -23,7 +23,6 @@ export default {
   methods: {
     _getDiscSongs() {
       getDiscSongs(parseInt(this.disc.id)).then(res => {
-          console.log(res);
         if (res.code === ERR_OK) {
           this.songs = this._normallizeSongs(res.data.musicList);
         }
@@ -38,7 +37,6 @@ export default {
     }
   },
   created(){
-      console.log(this.disc);
       if(!this.disc.id){
           this.$router.back();
       }

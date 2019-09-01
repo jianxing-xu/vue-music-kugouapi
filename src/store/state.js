@@ -3,6 +3,7 @@ import { playMode } from "@/assets/js/config"
 export default {
     singer: [],
     disc: {},
+    bang: {},
 
     playing: false,
     fullScrenn: false,

@@ -17,16 +17,18 @@ export class Song {
     getSongLyric() {
         getLyric(this.rid).then(res => {
             if (res.status === 200) {
-                if(!res.data.lrclist){
+                if(!res.data || !res.data.lrclist){
                     Vue.set(this, 'lyric', JSON.parse(JSON.stringify({code:-1,text:'暂无歌词，请欣赏音乐'})));
                     return;
                 }
                 Vue.set(this, 'lyric', lyricToStr(res.data.lrclist))
+            }else{
+                Vue.set(this, 'lyric', JSON.parse(JSON.stringify({code:-1,text:'暂无歌词，请欣赏音乐'})));
             }
         })
     }
     getSongCommont(page){
-        getCommont(this.rid,page).then( res => {
+        getCommont(15,this.rid,page).then( res => {
             Vue.set(this,'commont',JSON.parse(JSON.stringify(res)) || {});
         })
     }

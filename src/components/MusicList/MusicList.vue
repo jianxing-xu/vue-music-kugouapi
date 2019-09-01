@@ -12,11 +12,12 @@
     <div class="filter" :style="bgImg" ref="bgImg"></div>
     <div class="content">
       <div class="avatar">
-        <img :src="info.pic300 || info.img" alt />
+        <img :src="info.pic300 || info.img || info.pic" alt />
       </div>
       <div class="info">
         <span class="name" v-html="info.name"></span>
-        <span class="fans-num">歌曲数：{{info.musicNum || info.total}}</span>
+        <span class="fans-num" v-if="!info.sourceid">歌曲数：{{info.musicNum || info.total}}</span>
+        <span class="fans-num" v-else>{{info.pub}}</span>
         <div class="playAll">
           <i class="iconfont icon-zanting"></i>
           <span class="text">播放全部</span>
@@ -61,7 +62,7 @@ export default {
     ...mapGetters(["singer"]),
     bgImg() {
       return `background: url("${(this.info && this.info.pic300) ||
-        this.info.img}") no-repeat;
+        this.info.img || this.info.pic}") no-repeat;
         background-size: cover`;
     }
   },
