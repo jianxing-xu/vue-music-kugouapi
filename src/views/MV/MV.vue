@@ -10,6 +10,7 @@
       </keep-alive>
     </div>
     <MVDetail ref="detail" :mv="mv" />
+    <Dialog ref="dialog" cancel="" />
   </div>
 </template>
 
@@ -18,6 +19,7 @@ import ScrollBar from "@/base/scroll-bar/scroll-bar.vue";
 import MVDetail from "@/components/MVDetail/MVDetail.vue";
 import { getMVUrl } from "@/api/mv";
 import { mapMutations } from 'vuex'
+import Dialog from '@/base/dialog/dialog.vue'
 export default {
     name: 'MV',
   data() {
@@ -50,7 +52,7 @@ export default {
           this.mv = mv;
           this.$refs.detail.show();
         }else{
-            alert('not result');
+            this.$refs.dialog.show();
         }
       });
     },
@@ -69,7 +71,8 @@ export default {
 
   components: {
     ScrollBar,
-    MVDetail
+    MVDetail,
+    Dialog
   }
 };
 </script>

@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   height: 100%;
   background-color: $bg-color;
   color: $text-color;
+  position:fixed;
   .slide-enter, .slide-leave-to{
     transform: translateY(100%);
   }

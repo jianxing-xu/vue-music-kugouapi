@@ -35,13 +35,22 @@
         <loading />
       </div>
     </div>
+    <div class="commont-btn" @click="clickCommont">
+      <i class="iconfont icon-commont"></i>
+    </div>
+    <Commont v-if="showCommont" ref="commont" :commont="commont" @scrollToEnd="scrollToEnd" />
   </div>
 </template>
 
 <script>
 import SongList from "@/base/song-list/song-list.vue";
+import Commont from '@/components/Commont/Commont.vue'
+import {getCommont} from '@/api/song'
 import { mapActions, mapGetters } from "vuex";
+import { digest } from '@/api/config'
+import { playlistMixin } from '@/assets/js/mixin'
 export default {
+  mixins:[playlistMixin],
   props: {
     info: {
       default() {
@@ -56,14 +65,26 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      showCommont: false,
+      page: 0,
+      commont: {},
+    };
   },
   computed: {
     ...mapGetters(["singer"]),
     bgImg() {
       return `background: url("${(this.info && this.info.pic300) ||
-        this.info.img || this.info.pic}") no-repeat;
+        this.info.img ||
+        this.info.pic}") no-repeat;
         background-size: cover`;
+    },
+    digest(){
+      if(this.info.sourceid){
+        return digest.BANG;
+      }else{
+        return digest.DISC;
+      }
     }
   },
   methods: {
@@ -85,11 +106,37 @@ export default {
     selectItem(song, index) {
       this.selectPlay({ song, index, songs: this.songs });
     },
+    clickCommont(){
+      this.showCommont = true;
+      this.$nextTick(()=>{
+        this.$refs.commont.show();
+      })
+    },
+    _getCommont(info){
+      this.page++;
+      getCommont(this.digest.d,parseInt(info[this.digest.key]),this.page).then(res => {
+        if(!this.commont.rows){
+          this.commont = res;
+        }else{
+          res.rows = this.commont.rows.concat(res.rows);
+          this.commont = res;
+        }
+      })
+    },
+    scrollToEnd(){
+      this._getCommont(this.info);
+    },
+    handlePlaylist(list){
+      const bottom = list.length ? '60px' : '';
+      this.$refs.list.style.bottom = bottom;
+    },
+
     ...mapActions(["selectPlay"])
   },
 
   components: {
-    SongList
+    SongList,
+    Commont
   },
   mounted() {
     this.$nextTick(() => {
@@ -97,7 +144,16 @@ export default {
       this.headerH = this.$refs.header.clientHeight;
     });
   },
-  created() {}
+  created() {},
+  watch:{
+    info:{
+      deep: true,
+      immediate: true,
+      handler(info){
+        this._getCommont(info);
+      }
+    }
+  }
 };
 </script>
 <style scoped lang='scss'>
@@ -106,6 +162,15 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  .commont-btn{
+    position: fixed;
+    right: 15px;
+    top: 15px;
+    z-index: 100;
+    .iconfont{
+      font-size: $font-size-ll;
+    }
+  }
   .header {
     width: 100%;
     position: fixed;
@@ -136,7 +201,7 @@ export default {
   .content {
     position: absolute;
     top: 0;
-    padding-top: 25%;
+    padding-top: 20%;
     display: flex;
     align-items: center;
     .info {

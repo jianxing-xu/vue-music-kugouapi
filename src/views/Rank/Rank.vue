@@ -1,7 +1,7 @@
 <template>
   <!--根组件-->
   <div class="rank">
-    <div class="rank-list">
+    <div class="rank-list" ref="list">
       <scroll :data="rank">
         <ul>
           <li class="rank-group" v-for="(group, index) in rank" :key="index">
@@ -37,10 +37,12 @@
 </template>
 
 <script>
+import { playlistMixin } from '@/assets/js/mixin'
 import { getRank } from "@/api/rank";
 import { ERR_OK } from "@/api/config";
 import { mapGetters, mapMutations } from "vuex";
 export default {
+  mixins:[playlistMixin],
   data() {
     return {
       rank: []
@@ -63,6 +65,10 @@ export default {
       this.$router.push({
         path: `/rank/${bang.sourceid}`
       });
+    },
+    handlePlaylist(list){
+      const bottom = list.length ? '60px' : '';
+      this.$refs.list.style.bottom = bottom;
     },
 
     ...mapMutations({

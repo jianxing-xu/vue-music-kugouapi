@@ -69,7 +69,7 @@ export default {
   }
   .bar-item {
     display: inline-block;
-    width: px2rem(50);
+    padding: 0 9px;
     text-align: center;
     font-size: $font-size-m;
     span {

@@ -7,7 +7,7 @@
           <i class="iconfont icon-leftarrow"></i>
         </div>
         <div class="video-wrapper">
-          <video playsinline ref="video" :src="mv.url" autoplay width="100%" height="100%" controls></video>
+          <video playsinline ref="video" :src="mv.url" autoplay width="100%" height="100%"></video>
         </div>
       </div>
 
@@ -18,7 +18,7 @@
         </div>
 
         <div class="commont-wrapper" >
-          <Commont ref="commont" :commont="commont" ani="commont" :header="false" />
+          <Commont @scrollToEnd="scrollToEnd" ref="commont" :commont="commont" ani="commont" :header="false" />
         </div>
       </div>
     </div>
@@ -28,7 +28,6 @@
 <script>
 import { getCommont } from "@/api/song";
 import Commont from "@/components/Commont/Commont.vue";
-import { setTimeout } from 'timers';
 export default {
   props: {
     mv: {
@@ -56,6 +55,13 @@ export default {
       getCommont(7, mv.id, this.page).then(res => {
         this.commont = res;
       });
+    },
+    scrollToEnd(){
+      getCommont(7,this.mv.id,this.page+1).then(res=>{
+        let newRows = this.commont.rows.concat(res.rows);
+        res.rows = newRows;
+        this.commont = res;
+      })
     }
   },
   created() {
@@ -66,6 +72,10 @@ export default {
       deep: true,
       handler(val) {
         this._getMVCommont(val);
+        //ios autoplay 没用，就这样
+        setTimeout(()=>{
+          this.$refs.video.play();
+        },1000)
       }
     }
   },

@@ -31,7 +31,6 @@ export default {
         line-height: 2.5;
         &.router-link-active{
             color: $theme-color !important;
-            border-bottom: 2px solid $theme-color;
             font-size: $font-size-mm;
         }
     }

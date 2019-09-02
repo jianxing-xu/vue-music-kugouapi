@@ -10,7 +10,7 @@
       </div>
       <div class="commont-wrapper" v-if="commont.rows">
         <div class="new-commont">
-          <div class="list">
+          <div class="list" ref="list">
             <scroll :data="commont.rows" :purpul="purpul" @scrollToEnd="scrollToEnd">
               <div>
                 <h2 class="title">
@@ -32,7 +32,9 @@
                         <span v-if="!item.reply">{{item.msg}}</span>
                         <div v-else>
                           <span>
-                            回复<span style="color:rgb(105, 128, 230)">@{{decode(item.reply.u_name)}}</span>: {{item.msg}}
+                            回复
+                            <span style="color:rgb(105, 128, 230)">@{{decode(item.reply.u_name)}}</span>
+                            : {{item.msg}}
                             <br />
                           </span>
                           <div class="reply">{{item.reply.msg}}</div>
@@ -56,7 +58,6 @@
 </template>
 
 <script>
-import { totalmem } from "os";
 export default {
   props: {
     commont: {
@@ -65,13 +66,13 @@ export default {
         return {};
       }
     },
-    header:{
+    header: {
       type: Boolean,
-      default: true,
+      default: true
     },
-    ani:{
+    ani: {
       type: String,
-      default: 'commont'
+      default: "commont"
     }
   },
   data() {
@@ -100,9 +101,9 @@ export default {
       if (this.isMore) {
         this.$emit("scrollToEnd");
       }
-    }
+    },
   },
-  mounted(){
+  mounted() {
     this.show();
   }
 };
@@ -110,12 +111,12 @@ export default {
 
 <style scoped lang='scss'>
 .commont {
+  overflow: hidden; 
   .no-commont {
     position: fixed;
     top: px2rem(200);
     left: 50%;
     transform: translateX(-50%);
-    
   }
   &.commont-enter-active,
   &.commont-leave-active {
@@ -133,6 +134,7 @@ export default {
   top: 0;
   left: 0;
   color: $text-color-l;
+  z-index: 200;
   .header {
     width: 100%;
     height: px2rem(48);
@@ -152,11 +154,11 @@ export default {
   .commont-wrapper {
     width: 100%;
     height: 100%;
-    padding: 15px;
     box-sizing: border-box;
     .new-commont {
       width: 100%;
       height: 100%;
+      box-sizing: border-box;
       .title {
         display: flex;
         align-items: center;
@@ -173,9 +175,8 @@ export default {
       .list {
         width: 100%;
         position: absolute;
-        top:0;
-        bottom: 0;
-        overflow: hidden;
+        top: 0;
+        bottom: 60px;
         .loading-wrapper {
           width: 100%;
           line-height: 2;

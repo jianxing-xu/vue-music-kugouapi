@@ -17,8 +17,8 @@ export function getSlider() {
     });
 }
 
-export function getDisc(){
-    return axios.get('http://www.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=30&order=new').then( res =>{
+export function getDisc(page){
+    return axios.get(`http://www.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=${page}&rn=30&order=new`).then( res =>{
         return Promise.resolve(res.data);
     })
 }
@@ -46,6 +46,7 @@ export function getDisc(){
  *
  * http://www.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=30&order=new 歌单列表
  * http://www.kuwo.cn/api/www/playlist/playListInfo?pid=2852416543&pn=1&rn=30    歌单详情和歌曲
+ * http://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=75867567 歌词
  *
  * http://www.kuwo.cn/api/www/search/searchKey?key=x 搜索歌曲 为空时返回热门搜索
  * http://www.kuwo.cn/api/www/music/mvList?pid=236682871&pn=1&rn=30  MV列表

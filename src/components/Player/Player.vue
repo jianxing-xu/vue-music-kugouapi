@@ -20,7 +20,7 @@
             <div class="swiper-wrapper">
               <div class="swiper-slide cd">
                 <div class="cd-wrapper play" :class="{run:this.playing,pause:!this.playing}">
-                  <div class="cd-img">
+                  <div class="cd-img" ref="cdImg">
                     <img :src="currentSong.albumpic" width="100%" height="100%" alt />
                   </div>
                 </div>
@@ -98,8 +98,15 @@
       @play="canplay"
       @timeupdate="timeupdate"
       @ended="playEnd"
+      @error="error"
     ></audio>
-      <Commont v-if="clickCommont" ref="commont" :commont="currentSong.commont || {}" @scrollToEnd="scrollToEnd" />
+    <Commont
+      v-if="clickCommont"
+      ref="commont"
+      :commont="currentSong.commont || {}"
+      @scrollToEnd="scrollToEnd"
+    />
+    <Dialog ref="dialog" ok="下一首" @handleOK="next" cancel msg="此歌曲暂时无法播放" />
   </div>
 </template>
 
@@ -108,11 +115,12 @@ import Vue from "vue";
 import Swiper from "swiper";
 import Lyric from "lyric-parser";
 import { playMode } from "@/assets/js/config";
-import { getSongUrl, getCommont} from "@/api/song";
+import { getSongUrl, getCommont } from "@/api/song";
 import { mapGetters, mapMutations } from "vuex";
 import Progress from "@/base/progress/progress.vue";
 import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
-import Commont from "@/components/Commont/Commont.vue"
+import Commont from "@/components/Commont/Commont.vue";
+import Dialog from "@/base/dialog/dialog.vue";
 export default {
   data() {
     return {
@@ -137,6 +145,7 @@ export default {
     canplay() {
       this.onReady = true;
     },
+    error() {},
     togglePlay() {
       this.lyric && this.lyric.togglePlay();
       if (!this.playing) {
@@ -150,11 +159,8 @@ export default {
         return;
       }
       let index = this.currentIndex + 1;
-      if (!this.onReady) {
-        return;
-      }
       index = index === this.playlist.length - 1 ? 0 : index;
-      this.setCurrentIndex(this.currentIndex + 1);
+      this.setCurrentIndex(index);
     },
     prev() {
       if (!this.onReady) {
@@ -175,6 +181,7 @@ export default {
     },
     loop() {
       this.$refs.audio.currentTime = 0;
+      this.lyric.seek(0);
       this.$refs.audio.play();
     },
     pad(val, n = 2) {
@@ -204,13 +211,13 @@ export default {
     barTouchEnd(percent) {
       this.$refs.audio.currentTime = this.currentSong.duration * percent;
       this.lyric && this.lyric.seek(this.$refs.audio.currentTime * 1000);
+      this.setPlaying(true);
     },
     getLyric(str) {
-      let _this = this;
-      if(str.code === -1){
-        console.log('no lyric');
+      if (str.code === -1) {
+        console.log("no lyric");
         this.currentLyric = str.text;
-        return ;
+        return;
       }
       this.lyric = new Lyric(str, ({ lineNum, txt }) => {
         if (lineNum < 5) {
@@ -226,17 +233,18 @@ export default {
       });
       this.lyric.play();
     },
-    showCommont(){
+    showCommont() {
       this.clickCommont = true;
-      this.$refs.commont.show();
+      this.$nextTick(() => {
+        this.$refs.commont.show();
+      });
     },
-    scrollToEnd(){
-      this.page ++
-      getCommont(15,this.currentSong.rid,this.page).then( res => {
-          let commont = res;
-          res.rows = this.currentSong.commont.rows.concat(res.rows)
-          Vue.set(this.currentSong,'commont', JSON.parse(JSON.stringify(res)));
-      })
+    scrollToEnd() {
+      this.page++;
+      getCommont(15, this.currentSong.rid, this.page).then(res => {
+        res.rows = this.currentSong.commont.rows.concat(res.rows);
+        Vue.set(this.currentSong, "commont", JSON.parse(JSON.stringify(res)));
+      });
     },
 
     ...mapMutations({
@@ -252,7 +260,8 @@ export default {
     });
     this.$nextTick(() => {
       this.swiper = new Swiper(this.$refs.swiper, {
-        observer: true
+        observer: true,
+        effect: 'fade',
       });
     });
   },
@@ -280,7 +289,7 @@ export default {
   watch: {
     currentSong: {
       immediate: true,
-      handler(song, oldSong) {
+      handler(song) {
         this.lyric && this.lyric.stop();
         this.lyric = null;
         if (!this.playing) {
@@ -289,7 +298,7 @@ export default {
         if (!song.lyric) {
           song.getSongLyric();
         }
-        if(!song.commont){
+        if (!song.commont) {
           song.getSongCommont(this.page);
         }
         if (!song.url) {
@@ -300,7 +309,12 @@ export default {
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
           this.getLyric(song.lyric);
-          song.url && this.$refs.audio.play();
+          song.url &&
+            this.$refs.audio.play().catch(err => {
+              console.log(err);
+              this.onReady = true;
+              this.$refs.dialog.show();
+            });
         }, 1000);
       }
     },
@@ -311,7 +325,8 @@ export default {
   components: {
     Progress,
     ProgressCircle,
-    Commont
+    Commont,
+    Dialog
   }
 };
 </script>
@@ -340,9 +355,9 @@ export default {
       filter: blur(20px);
       z-index: -1;
       transform: scale(1.1);
-      background: rgba(0,0,0,1);
-      img{
-        opacity: .7;
+      background: rgba(0, 0, 0, 1);
+      img {
+        opacity: 0.7;
       }
     }
     .header {
@@ -368,7 +383,8 @@ export default {
         align-items: center;
         text-align: center;
         justify-content: space-evenly;
-        .singer, .title{
+        .singer,
+        .title {
           width: px2rem(200);
           white-space: nowrap;
           overflow: hidden;
@@ -492,7 +508,7 @@ export default {
     }
   }
   .player-mini {
-    height: px2rem(48);
+    height: 60px;
     background-color: $bg-hig-color;
     width: 100%;
     font-size: $font-size-mm;
@@ -500,6 +516,7 @@ export default {
     bottom: 0;
     display: flex;
     align-items: center;
+    z-index: 100;
     &.slide-enter-active,
     &.slide-leave-active {
       transition: all 0.3s;
@@ -511,7 +528,7 @@ export default {
     }
     .mini-cd {
       height: 100%;
-      width: px2rem(48);
+      width: 60px;
       border-radius: 50%;
       overflow: hidden;
       display: flex;
@@ -545,7 +562,6 @@ export default {
         font-size: 30px;
         transform: scale(1.1);
       }
-    
     }
     .info {
       height: 100%;
@@ -560,7 +576,7 @@ export default {
         width: px2rem(200);
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space:nowrap;
+        white-space: nowrap;
         font-size: $font-size;
         color: $text-color-ll;
       }

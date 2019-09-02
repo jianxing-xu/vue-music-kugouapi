@@ -1,6 +1,6 @@
 <template>
   <!--根组件-->
-  <div class="mv-list">
+  <div class="mv-list" ref="list">
     <scroll :data="mv && mv.mvlist">
       <div class="list" v-if="mv">
         <section
@@ -38,7 +38,9 @@
 
 <script>
 import { getMVList } from "@/api/mv";
+import { playlistMixin } from '@/assets/js/mixin'
 export default {
+  mixins:[playlistMixin],
   data() {
     return {
       page: 1,
@@ -60,6 +62,10 @@ export default {
     },
     selectItem(item) {
       this.$emit("selectItem", item);
+    },
+    handlePlaylist(list) {
+      const bottom = list.length ? "60px" : "";
+      this.$refs.list.style.bottom = bottom;
     }
   },
   watch: {
@@ -140,7 +146,7 @@ export default {
         padding-left: 15px;
         display: flex;
         flex-direction: column;
-        position:absolute;
+        position: absolute;
         top: 0;
         .name {
           line-height: 2;

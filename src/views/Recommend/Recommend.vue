@@ -1,8 +1,8 @@
 <template>
   <!--根组件-->
   <div class="recommend">
-    <div class="content">
-      <scroll class="scroll" @data="sliders.concat(disc)">
+    <div class="content" ref="content">
+      <scroll class="scroll" @data="sliders.concat(disc)" @scrollToEnd="scrollToEnd" :purpul="true">
         <div>
           <Slider :images="sliders" />
           <div class="disc-wrapper">
@@ -22,6 +22,9 @@
               </div>
             </div>
           </div>
+          <div class="more-loading" v-if="isMore">
+            <loading />
+          </div>
         </div>
       </scroll>
       <div class="loading-wrapper" v-if="!sliders.concat(disc).length">
@@ -29,8 +32,8 @@
       </div>
     </div>
     <transition name="slide">
-        <router-view></router-view>
-      </transition>
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -39,11 +42,15 @@ import Slider from "@/base/slider/slider.vue";
 import { getSlider, getDisc } from "@/api/recommend";
 import { ERR_OK } from "@/api/config";
 import { mapMutations } from "vuex";
+import { playlistMixin } from '@/assets/js/mixin'
 export default {
+  mixins:[playlistMixin],
   data() {
     return {
       sliders: [],
-      disc: []
+      disc: [],
+      page: 0,
+      isMore: true
     };
   },
   computed: {},
@@ -59,9 +66,18 @@ export default {
       });
     },
     _getDisc() {
-      getDisc().then(res => {
+      this.page++;
+      if (!this.isMore) {
+        return;
+      }
+      getDisc(this.page).then(res => {
         if (res.code === ERR_OK) {
-          this.disc = res.data.data;
+          if (res.data.pn * res.data.rn < res.data.total) {
+            this.isMore = true;
+          } else {
+            return (this.isMore = false);
+          }
+          this.disc = this.disc.concat(res.data.data);
         }
       });
     },
@@ -70,6 +86,13 @@ export default {
       this.$router.push({
         path: `/recommend/${disc.id}`
       });
+    },
+    scrollToEnd() {
+      this._getDisc();
+    },
+    handlePlaylist(list){
+      const bottom = list.length ? '60px' : '';
+      this.$refs.content.style.bottom = bottom;
     },
 
     ...mapMutations({
@@ -102,6 +125,13 @@ export default {
     top: px2rem(90);
     bottom: 0;
     overflow: hidden;
+    .scroll {
+      .more-loading {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+    }
     .loading-wrapper {
       position: absolute;
       top: 50%;
