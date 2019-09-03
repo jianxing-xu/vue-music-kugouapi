@@ -9,7 +9,7 @@
           <router-view @selectItem="selectMV"></router-view>
       </keep-alive>
     </div>
-    <MVDetail ref="detail" :mv="mv" />
+    <MVDetail ref="detail" v-if="mv" :mv="mv" />
     <Dialog ref="dialog" cancel="" />
   </div>
 </template>

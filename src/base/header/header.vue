@@ -1,17 +1,26 @@
 <template>
   <!--根组件-->
   <div class="header">
-    <i class="iconfont icon-cx"></i>
+    <i class="iconfont icon-cx" @click="search"></i>
     <div class="logo">
       <img height="43" :src="require('@/assets/img/logo-1.png')" alt />
       <span class="text">music</span>
     </div>
-    <i class="iconfont icon-mine1"></i>
+    <i class="iconfont icon-mine1" @click="mine"></i>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  methods:{
+    search(){
+      this.$emit('selectSearch');
+    },
+    mine(){
+      this.$emit('selectMine');
+    }
+  }
+};
 </script>
 
 <style scoped lang='scss'>

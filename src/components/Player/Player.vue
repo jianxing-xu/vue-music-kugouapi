@@ -225,7 +225,7 @@ export default {
         } else {
           this.$refs.lyricScroll.scrollToElement(
             this.$refs.lyricGroup[lineNum - 5],
-            300
+            500
           );
         }
         this.currentLyric = txt;
@@ -261,7 +261,7 @@ export default {
     this.$nextTick(() => {
       this.swiper = new Swiper(this.$refs.swiper, {
         observer: true,
-        effect: 'fade',
+
       });
     });
   },
@@ -410,8 +410,8 @@ export default {
           .lyric-line {
             &.current-line {
               color: $text-color;
-              transform: scale(1.2);
-              transition: transform 0.3s;
+              transform: scale(1.1);
+              transition: transform 0.5s;
             }
           }
         }

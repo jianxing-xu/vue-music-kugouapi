@@ -106,6 +106,8 @@ export default {
     position: fixed;
     top: px2rem(90);
     bottom: 0;
+    padding: 0 15px;
+    box-sizing: border-box;
     .rank-group {
       width: 100%;
       .title {

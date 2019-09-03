@@ -1,8 +1,8 @@
 <template>
   <!--根组件-->
-    <div class="wrapper" ref="wrapper">
-      <slot></slot>
-    </div>
+  <div class="wrapper" ref="wrapper">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
@@ -19,34 +19,34 @@ export default {
     },
     data: {
       type: Array,
-      default () {
+      default() {
         return [];
       }
     },
-    scroller:{
+    scroller: {
       type: Function,
-      default:function(){}
+      default: function() {}
     },
-    listenScroll:{
+    listenScroll: {
       type: Boolean,
       default: false
     },
-    purpul:{
+    purpul: {
       type: Boolean,
       default: false
     },
-    pulldown:{
+    pulldown: {
       type: Boolean,
       default: false
     },
-    beforeScroll:{
+    beforeScroll: {
       type: Boolean,
-      default: false,
+      default: false
     },
-    scrollX:{
+    scrollX: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
@@ -58,38 +58,38 @@ export default {
       if (!this.$refs.wrapper) {
         return;
       }
-      this.scroll = new BScroll(this.$refs.wrapper,{
-          probeType: this.probeType,
-          click: this.click,
-          scrollX: this.scrollX,
-          scrollY: !this.scrollX,
+      this.scroll = new BScroll(this.$refs.wrapper, {
+        probeType: this.probeType,
+        click: this.click,
+        scrollX: this.scrollX,
+        scrollY: !this.scrollX
       });
       //监听滚动到底部后，派发事件
-      if(this.purpul){
-        this.scroll.on('scrollEnd',()=>{
-          if(this.scroll.y <= this.scroll.maxScrollY + 50){
-            this.$emit('scrollToEnd');
+      if (this.purpul) {
+        this.scroll.on("scrollEnd", () => {
+          if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+            this.$emit("scrollToEnd");
           }
-        })
+        });
       }
       //监听 下拉超过50 后 派发事件
-      if(this.pulldown){
-        this.scroll.on('scroll', () => {
-          if(this.scroll.y > 50){
-            this.$emit('scrollPullDown');
+      if (this.pulldown) {
+        this.scroll.on("scroll", () => {
+          if (this.scroll.y > 50) {
+            this.$emit("scrollPullDown");
           }
-        })
+        });
       }
       //监听果冻之前 派发事件
-      if(this.beforeScroll){
-        this.scroll.on('beforeScrollStart',()=>{
-          this.$emit('beforeScroll');
-        })
+      if (this.beforeScroll) {
+        this.scroll.on("beforeScrollStart", () => {
+          this.$emit("beforeScroll");
+        });
       }
-      if(this.listenScroll){
-          this.scroll.on('scroll',(pos)=>{
-              this.scroller(pos);
-          });
+      if (this.listenScroll && this.scroll) {
+        this.scroll.on("scroll", pos => {
+          this.scroller(pos);
+        });
       }
     },
     enable() {
@@ -103,14 +103,13 @@ export default {
       this.scroll && this.scroll.refresh();
     },
     //从外部 直接调用的方法 改变this 为 scroll 对象 然后把 参数全部传过来
-    scrollTo () {
-      this.scroll && this.scroll.scrollTo.apply(this.scroll,arguments);
+    scrollTo() {
+      this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments);
     },
     //滚动到 指定的 dom 处
-    scrollToElement () {
-      this.scroll && this.scroll.scrollToElement.apply(this.scroll,arguments);
-    },
-    
+    scrollToElement() {
+      this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments);
+    }
   },
   watch: {
     data() {
@@ -123,6 +122,9 @@ export default {
     setTimeout(() => {
       this._initScroll();
     }, 20);
+  },
+  beforeDestroy(){
+    this.scroll.stop();
   }
 };
 </script>

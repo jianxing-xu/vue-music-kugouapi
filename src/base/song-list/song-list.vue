@@ -1,7 +1,6 @@
 <template>
   <!--根组件-->
-  <scroll class="song-list" v-if="songs" ref="songscroll" :data="songs" :listenScroll="listenScroll" :probeType="3" :scroller="scrolling">
-    <ul>
+    <ul class="song-list">
       <li class="song-item" v-for="(song, index) in songs" :key="index" @click="selectItem(song,index)">
         <div class="sort">{{index+1}}</div>
         <div class="info">
@@ -10,7 +9,6 @@
         </div>
       </li>
     </ul>
-  </scroll>
 </template>
 
 <script>
@@ -22,9 +20,9 @@ export default {
         return [];
       }
     },
-    listenScroll: {
-        type: Boolean,
-        default: false,
+    scrolling:{
+      type: Function,
+      default:function(){}
     }
   },
   data(){
@@ -36,21 +34,18 @@ export default {
       selectItem(song,index){
         this.$emit('selectItem',song,index);
       },
-      scrolling(pos){
-          if(this.listenScroll){
-              this.$emit('scrolling',pos);
-          }
-      }
+      // scrolling(pos){
+      //     if(this.listenScroll){
+      //         this.$emit('scrolling',pos);
+      //     }
+      // }
   }
 };
 </script>
 
 <style scoped lang='scss'>
 .song-list {
-    ul{
-        width: 100%;
         background-color: $bg-color;
-    }
   width: 100%;
   height: 100%;
   .song-item {

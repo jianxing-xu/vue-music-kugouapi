@@ -25,15 +25,21 @@
       </div>
     </div>
     <div class="list" ref="list">
-      <SongList
-        :songs="songs"
-        :listenScroll="true"
-        @scrolling="scrolling"
-        @selectItem="selectItem"
-      />
-      <div class="loading-wrapper" v-if="!songs.length">
-        <loading />
-      </div>
+      <scroll
+        v-if="songs"
+        ref="songscroll"
+        :data="songs"
+        :listenScroll="listenScroll"
+        :probeType="3"
+        :scroller="scrolling"
+      >
+        <div>
+          <SongList :songs="songs" @selectItem="selectItem" />
+          <div class="loading-wrapper" v-if="!songs.length">
+            <loading />
+          </div>
+        </div>
+      </scroll>
     </div>
     <div class="commont-btn" @click="clickCommont">
       <i class="iconfont icon-commont"></i>
@@ -44,13 +50,13 @@
 
 <script>
 import SongList from "@/base/song-list/song-list.vue";
-import Commont from '@/components/Commont/Commont.vue'
-import {getCommont} from '@/api/song'
+import Commont from "@/components/Commont/Commont.vue";
+import { getCommont } from "@/api/song";
 import { mapActions, mapGetters } from "vuex";
-import { digest } from '@/api/config'
-import { playlistMixin } from '@/assets/js/mixin'
+import { digest } from "@/api/config";
+import { playlistMixin } from "@/assets/js/mixin";
 export default {
-  mixins:[playlistMixin],
+  mixins: [playlistMixin],
   props: {
     info: {
       default() {
@@ -69,6 +75,8 @@ export default {
       showCommont: false,
       page: 0,
       commont: {},
+      listenScroll: true,
+      y: 0
     };
   },
   computed: {
@@ -79,10 +87,10 @@ export default {
         this.info.pic}") no-repeat;
         background-size: cover`;
     },
-    digest(){
-      if(this.info.sourceid){
+    digest() {
+      if (this.info.sourceid) {
         return digest.BANG;
-      }else{
+      } else {
         return digest.DISC;
       }
     }
@@ -90,6 +98,9 @@ export default {
   methods: {
     scrolling(pos) {
       let y = pos.y;
+      this._pullY(y);
+    },
+    _pullY(y) {
       if (y > 0) {
         let scale = 1 + y / this.bgH;
         this.$refs.bgImg.style["transform"] = `scale(${scale})`;
@@ -106,28 +117,32 @@ export default {
     selectItem(song, index) {
       this.selectPlay({ song, index, songs: this.songs });
     },
-    clickCommont(){
+    clickCommont() {
       this.showCommont = true;
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.$refs.commont.show();
-      })
+      });
     },
-    _getCommont(info){
+    _getCommont(info) {
       this.page++;
-      getCommont(this.digest.d,parseInt(info[this.digest.key]),this.page).then(res => {
-        if(!this.commont.rows){
+      getCommont(
+        this.digest.d,
+        parseInt(info[this.digest.key]),
+        this.page
+      ).then(res => {
+        if (!this.commont.rows) {
           this.commont = res;
-        }else{
+        } else {
           res.rows = this.commont.rows.concat(res.rows);
           this.commont = res;
         }
-      })
+      });
     },
-    scrollToEnd(){
+    scrollToEnd() {
       this._getCommont(this.info);
     },
-    handlePlaylist(list){
-      const bottom = list.length ? '60px' : '';
+    handlePlaylist(list) {
+      const bottom = list.length ? "60px" : "";
       this.$refs.list.style.bottom = bottom;
     },
 
@@ -145,11 +160,11 @@ export default {
     });
   },
   created() {},
-  watch:{
-    info:{
+  watch: {
+    info: {
       deep: true,
       immediate: true,
-      handler(info){
+      handler(info) {
         this._getCommont(info);
       }
     }
@@ -162,12 +177,12 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
-  .commont-btn{
+  .commont-btn {
     position: fixed;
     right: 15px;
     top: 15px;
     z-index: 100;
-    .iconfont{
+    .iconfont {
       font-size: $font-size-ll;
     }
   }

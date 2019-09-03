@@ -1,12 +1,12 @@
 <template>
   <div class="app">
     <div class="header-wrapper">
-      <Header />
+      <Header @selectSearch="search" />
     </div>
     <div class="tab-wrapper">
       <Tab :items="tabItem" />
     </div>
-    <keep-alive exclude="MV">
+    <keep-alive exclude="MV,search">
       <router-view></router-view>
     </keep-alive>
     <transition name="slide">
@@ -33,7 +33,11 @@ export default {
   computed: {
     ...mapGetters(["playlist"])
   },
-
+  methods:{
+    search(){
+      this.$router.push('/search');
+    }
+  },
   components: {
     Header,
     Tab,
@@ -54,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
   height: 100%;
   background-color: $bg-color;
   color: $text-color;
-  position:fixed;
   .slide-enter, .slide-leave-to{
     transform: translateY(100%);
   }

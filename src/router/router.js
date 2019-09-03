@@ -9,6 +9,10 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
+      path: '/search',
+      component: () => import('@/views/Search/Search.vue')
+    },
+    {
       path: '/recommend',
       component: () => import('@/views/Recommend/Recommend.vue'),
       children:[

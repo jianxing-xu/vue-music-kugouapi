@@ -3,7 +3,7 @@
     <div class="progress-bar" ref="bar"  @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
         <div ref="innerBar" class="progress-inner"></div>
         <div ref="btn" class="btn-wrapper">
-            <div class="btn"></div>
+            <div class="btn"></div> 
         </div>
     </div>
 </div>
@@ -68,7 +68,7 @@ export default {
             }
             this._offsetWidth(p * this.barWidth);
         }
-    }
+    },
 }
 </script>
 
@@ -102,13 +102,22 @@ export default {
             position: absolute;
             top: 50%;
             transform: translate(0,-50%);
+            display: flex;
+            .btn{
+                margin: auto;
+                border-radius: 100%;
+                display: inline-block;
+                width: 11px;
+                height: 11px;
+                background-color: $theme-color;
+            }
         }
         .progress-inner{
             position: absolute;
             left:0; 
             height: 100%;
             width: 0;
-            background-color: #fff;
+            background-color: $theme-color;
         }
     }
 }
