@@ -93,6 +93,7 @@ export default {
     handlePlaylist(list){
       const bottom = list.length ? '60px' : '';
       this.$refs.content.style.bottom = bottom;
+      this.$refs.scroll && this.$refs.scroll.refresh();
     },
 
     ...mapMutations({

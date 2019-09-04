@@ -10,17 +10,17 @@
       </div>
     </div>
     <div class="filter" :style="bgImg" ref="bgImg"></div>
-    <div class="content">
+    <div class="content" ref="content">
       <div class="avatar">
-        <img :src="info.pic300 || info.img || info.pic" alt />
+        <img :src="info.pic300 || info.img || info.pic || require('@/assets/img/default.jpeg')" />
       </div>
       <div class="info">
         <span class="name" v-html="info.name"></span>
         <span class="fans-num" v-if="!info.sourceid">歌曲数：{{info.musicNum || info.total}}</span>
         <span class="fans-num" v-else>{{info.pub}}</span>
-        <div class="playAll">
+        <div class="playAll" @click="_randomAll">
           <i class="iconfont icon-zanting"></i>
-          <span class="text">播放全部</span>
+          <span class="text">随机全部</span>
         </div>
       </div>
     </div>
@@ -52,9 +52,11 @@
 import SongList from "@/base/song-list/song-list.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import { getCommont } from "@/api/song";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations} from "vuex";
 import { digest } from "@/api/config";
 import { playlistMixin } from "@/assets/js/mixin";
+import { random } from "@/assets/js/util"
+import { playMode } from "@/assets/js/config"
 export default {
   mixins: [playlistMixin],
   props: {
@@ -80,9 +82,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["singer"]),
+    ...mapGetters(["singer","mode"]),
     bgImg() {
-      return `background: url("${(this.info && this.info.pic300) ||
+      return `background: url("${(this.info && this.info.pic300 || require('@/assets/img/default.jpeg')) ||
         this.info.img ||
         this.info.pic}") no-repeat;
         background-size: cover`;
@@ -101,10 +103,12 @@ export default {
       this._pullY(y);
     },
     _pullY(y) {
-      if (y > 0) {
+      if (y >= 0) {
+        this.$refs.content.style.zIndex = 10;
         let scale = 1 + y / this.bgH;
         this.$refs.bgImg.style["transform"] = `scale(${scale})`;
       } else {
+        this.$refs.content.style.zIndex = 0;
         if (y < -(this.bgH - this.headerH)) {
           this.$refs.list.style.top = this.headerH + "px";
           this.$refs.list.style.paddingTop = this.bgH - this.headerH + "px";
@@ -116,6 +120,9 @@ export default {
     },
     selectItem(song, index) {
       this.selectPlay({ song, index, songs: this.songs });
+    },
+    _randomAll(e){
+       this.randomAll(this.songs);
     },
     clickCommont() {
       this.showCommont = true;
@@ -144,9 +151,13 @@ export default {
     handlePlaylist(list) {
       const bottom = list.length ? "60px" : "";
       this.$refs.list.style.bottom = bottom;
+      this.$refs.scroll && this.$refs.scroll.refresh();
     },
 
-    ...mapActions(["selectPlay"])
+    ...mapActions(["selectPlay","randomAll"]),
+    ...mapMutations({
+      setPlayMode: "SET_PLAYMODE",
+    })
   },
 
   components: {
@@ -219,10 +230,12 @@ export default {
     padding-top: 20%;
     display: flex;
     align-items: center;
+    z-index: 10;
     .info {
       height: 100%;
       display: flex;
       flex-direction: column;
+      position: relative;
       .name {
         font-size: $font-size-l;
         width: px2rem(200);
@@ -235,6 +248,7 @@ export default {
         color: $text-color-l;
       }
       .playAll {
+        position: relative;
         width: px2rem(90);
         font-size: $font-size-m;
         display: flex;

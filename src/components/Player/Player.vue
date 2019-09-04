@@ -4,7 +4,7 @@
     <transition name="slide-full">
       <div v-show="fullScrenn" class="player-full">
         <div class="bgImg">
-          <img :src="currentSong.albumpic" width="100%" height="100%" />
+          <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="100%" height="100%" />
         </div>
         <div class="header">
           <span class="back" @click.prevent="back">
@@ -21,14 +21,14 @@
               <div class="swiper-slide cd">
                 <div class="cd-wrapper play" :class="{run:this.playing,pause:!this.playing}">
                   <div class="cd-img" ref="cdImg">
-                    <img :src="currentSong.albumpic" width="100%" height="100%" alt />
+                    <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="100%" height="100%" alt />
                   </div>
                 </div>
                 <div class="commont">
                   <span class="commont-btn">
                     <i class="iconfont icon-commont" @click="showCommont"></i>
                   </span>
-                  <span class="current-lyric">{{currentLyric || ' '}}</span>
+                  <span class="current-lyric" v-html="currentLyric || '&nbsp; '"></span>
                 </div>
               </div>
               <div class="swiper-slide lyric" v-if="lyric">
@@ -76,7 +76,7 @@
     <transition name="slide">
       <div class="player-mini" v-show="!fullScrenn" @click.prevent="open">
         <div class="mini-cd play" :class="{run:this.playing,pause:!this.playing}">
-          <img :src="currentSong.albumpic" width="80%" height="80%" />
+          <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="80%" height="80%" />
         </div>
         <div class="info">
           <span class="song-name">{{currentSong.songname}}</span>
@@ -121,6 +121,7 @@ import Progress from "@/base/progress/progress.vue";
 import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import Dialog from "@/base/dialog/dialog.vue";
+import { random } from "@/assets/js/util"
 export default {
   data() {
     return {
@@ -157,6 +158,12 @@ export default {
     next() {
       if (!this.onReady) {
         return;
+      }
+      if(this.mode===playMode.random){
+        return this.setCurrentIndex(random(0,this.playlist.length-1));
+      }
+      if(this.mode === playMode.loop || this.playlist.length === 1){
+        return this.loop();
       }
       let index = this.currentIndex + 1;
       index = index === this.playlist.length - 1 ? 0 : index;
@@ -304,7 +311,10 @@ export default {
         if (!song.url) {
           getSongUrl(song.rid).then(res => {
             Vue.set(song, "url", res.url);
-          });
+          }).catch(()=>{
+            this.onReady = true;
+            this.$refs.dialog.show();
+          })
         }
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
@@ -431,7 +441,7 @@ export default {
               text-align: center;
               width: px2rem(190);
               font-size: $font-size-mm;
-              color: $text-color-ll;
+              color: $text-color-l;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;

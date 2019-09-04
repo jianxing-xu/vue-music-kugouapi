@@ -116,6 +116,7 @@ export default {
     handlePlaylist(list) {
       const bottom = list.length ? "60px" : "";
       this.$refs.listContent.style.bottom = bottom;
+      this.$refs.scroll && this.$refs.scroll.refresh();
     }
   },
   watch: {

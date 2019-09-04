@@ -10,4 +10,5 @@ export default {
 
     SET_DISC: "SET_DISC",
     SET_BANG: "SET_BANG",
+    SET_HISTORY: "SET_HISTORY"
 }

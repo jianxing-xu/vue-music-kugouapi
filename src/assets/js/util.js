@@ -1,6 +1,7 @@
 import dateformat from 'dateformat-util'
 import pinyin from 'pinyin'
 
+
 export function toFirstCode(chinese) {
     let str = chinese.substring(0, 1);
     const reg = new RegExp(/[a-zA-Z]/);
@@ -15,3 +16,10 @@ export function toFirstCode(chinese) {
 export function DateFormat(date, fmt = "yyyy-MM-dd") {
     return dateformat.format(date, fmt);
 }
+
+export function random(start,end,fixed=0){
+    let diff = end - start;
+    let r = Math.random(diff);
+    return parseInt((start + r * diff).toFixed(fixed));
+}
+

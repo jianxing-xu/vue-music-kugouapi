@@ -170,6 +170,7 @@ export default {
           padding-right: 15px;
           font-size: $font-size-ll;
           font-weight: bold;
+          color: $text-color-ll;
         }
       }
       .list {

@@ -35,7 +35,15 @@ export default {
       return ret;
     }
   },
-
+  watch: {
+    singer: {
+      deep: true,
+      handler() {
+        this.songs = [];
+        this._getSongs();
+      }
+    }
+  },
   created() {
     if (!this.singer.id) {
       return this.$router.back();

@@ -24,6 +24,7 @@
     "dateformat-util": "^1.0.5",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "good-storage": "^1.1.0",
     "lyric-parser": "^1.0.1",
     "node-sass": "^4.9.0",
     "pinyin": "^2.9.0",

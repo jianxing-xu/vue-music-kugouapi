@@ -18,10 +18,6 @@ module.exports = {
                 target: 'http://www.kuwo.cn/url',
                 secure: true,
                 changeOrigin: true,
-                // bypass: function (req, res, proxyOptions) {
-                //     req.headers.referer = 'https://c.y.qq.com';
-                //     req.headers.host = 'c.y.qq.com';
-                // },
                 pathRewrite: {
                     '/getSongUrl': ''
                 }
@@ -30,10 +26,6 @@ module.exports = {
                 target: 'http://www.kuwo.cn/url',
                 secure: true,
                 changeOrigin: true,
-                // bypass: function (req, res, proxyOptions) {
-                //     req.headers.referer = 'https://c.y.qq.com';
-                //     req.headers.host = 'c.y.qq.com';
-                // },
                 pathRewrite: {
                     '/getMVUrl': ''
                 }

@@ -9,5 +9,6 @@ export default {
     currentIndex: (state) => state.currentIndex,
     currentSong: (state) => state.playlist[state.currentIndex],
     mode: (state) => state.mode,
+    his: (state) => state.his,
 
 }

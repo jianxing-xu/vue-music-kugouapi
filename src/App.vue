@@ -6,7 +6,7 @@
     <div class="tab-wrapper">
       <Tab :items="tabItem" />
     </div>
-    <keep-alive exclude="MV,search">
+    <keep-alive exclude="MV">
       <router-view></router-view>
     </keep-alive>
     <transition name="slide">

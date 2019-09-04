@@ -124,7 +124,7 @@ export default {
     }, 20);
   },
   beforeDestroy(){
-    this.scroll.stop();
+    this.scroll && this.scroll.stop();
   }
 };
 </script>

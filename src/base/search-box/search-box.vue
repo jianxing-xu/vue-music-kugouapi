@@ -2,8 +2,8 @@
   <!--根组件-->
   <div class="search-box">
     <div class="input-box">
-      <input type="text" v-model="key" ref="key" @focus="foucs" :placeholder="placeholder"/>
-      <i class="iconfont icon-delete" v-show="key" @click="key=''"></i>
+      <input type="text" v-model="key" ref="key" @focus="focus" :placeholder="placeholder"/>
+      <i class="iconfont icon-delete" v-show="key" @click="chearKey"></i>
     </div>
     <div class="suggest-key" v-show="key && isFocus">
       <scroll>
@@ -21,12 +21,13 @@
 <script>
 import { getSuggestKey } from "@/api/search";
 import { ERR_OK } from "@/api/config";
-import { setTimeout } from "timers";
+import { mapActions } from 'vuex'
+
 export default {
   props:{
       placeholder:{
           type: String,
-          default: "搜索歌曲"
+          default: "搜索歌曲丶歌手"
       }
   },
   data() {
@@ -42,11 +43,13 @@ export default {
     }
   },
   methods: {
-    foucs() {
+    focus() {
       this.isFocus = true;
     },
     blur() {
       this.$refs.key.blur();
+      this.isFocus = false;
+      console.log(this.isFocus);
     },
     setKey(key) {
       this.key = key;
@@ -75,17 +78,28 @@ export default {
       });
       return ret;
     },
-    searchKey(item) {
-      this.isFocus = false;
+    searchKey(item) {;
       this.blur();
       this.setKey(item);
       this.exprotKey(item);
-    }
+      this._saveHistory(item);
+    },
+    chearKey(){
+      this.key = '';
+      this.$emit('clearKey');
+    },
+
+
+
+    ...mapActions(['_saveHistory'])
   },
   watch: {
     key: {
       handler(key,oldKey) {
         this._getSuggestKey(key);
+        if(key === ''){
+          this.$emit('keyEmpty');
+        }
       }
     }
   }

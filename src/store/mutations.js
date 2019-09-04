@@ -26,5 +26,8 @@ export default {
     },
     [types.SET_BANG](state,bang){
         state.bang = bang;
+    },
+    [types.SET_HISTORY](state,his){
+        state.his = his;
     }
 }

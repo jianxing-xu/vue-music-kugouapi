@@ -14,6 +14,8 @@ export function getSongUrl(rid) {
         }
     }).then(res => {
         return Promise.resolve(res.data);
+    }).catch(()=>{
+        return Promise.reject(res);
     })
 }
 
