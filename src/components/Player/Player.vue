@@ -4,7 +4,11 @@
     <transition name="slide-full">
       <div v-show="fullScrenn" class="player-full">
         <div class="bgImg">
-          <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="100%" height="100%" />
+          <img
+            :src="currentSong.albumpic || require('@/assets/img/default.jpeg')"
+            width="100%"
+            height="100%"
+          />
         </div>
         <div class="header">
           <span class="back" @click.prevent="back">
@@ -21,7 +25,12 @@
               <div class="swiper-slide cd">
                 <div class="cd-wrapper play" :class="{run:this.playing,pause:!this.playing}">
                   <div class="cd-img" ref="cdImg">
-                    <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="100%" height="100%" alt />
+                    <img
+                      :src="currentSong.albumpic || require('@/assets/img/default.jpeg')"
+                      width="100%"
+                      height="100%"
+                      alt
+                    />
                   </div>
                 </div>
                 <div class="commont">
@@ -51,7 +60,7 @@
           <div class="progress-wrapper">
             <span class="currentTime">{{formatTime(currentTime)}}</span>
             <Progress :percent="percent" @barTouchEnd="barTouchEnd" />
-            <span class="duration">{{formatTime(currentSong.duration)}}</span>
+            <span class="duration">{{formatTime(currentSong && currentSong.duration)}}</span>
           </div>
           <div class="btn">
             <div class="play-mode" @click="changeMode">
@@ -76,7 +85,11 @@
     <transition name="slide">
       <div class="player-mini" v-show="!fullScrenn" @click.prevent="open">
         <div class="mini-cd play" :class="{run:this.playing,pause:!this.playing}">
-          <img :src="currentSong.albumpic || require('@/assets/img/default.jpeg')" width="80%" height="80%" />
+          <img
+            :src="currentSong.albumpic || require('@/assets/img/default.jpeg')"
+            width="80%"
+            height="80%"
+          />
         </div>
         <div class="info">
           <span class="song-name">{{currentSong.songname}}</span>
@@ -87,7 +100,7 @@
             <i class="iconfont" :class="playIcon"></i>
           </progress-circle>
         </div>
-        <div class="playlist">
+        <div class="playlist" @click.stop="showPlayList" >
           <i class="iconfont icon-liebiao"></i>
         </div>
       </div>
@@ -107,6 +120,7 @@
       @scrollToEnd="scrollToEnd"
     />
     <Dialog ref="dialog" ok="下一首" @handleOK="next" cancel msg="此歌曲暂时无法播放" />
+    <play-list ref="playList"/>
   </div>
 </template>
 
@@ -121,7 +135,8 @@ import Progress from "@/base/progress/progress.vue";
 import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import Dialog from "@/base/dialog/dialog.vue";
-import { random } from "@/assets/js/util"
+import PlayList from "@/components/PlayList/PlayList.vue"
+import { random } from "@/assets/js/util";
 export default {
   data() {
     return {
@@ -137,6 +152,9 @@ export default {
     };
   },
   methods: {
+    showPlayList(){
+      this.$refs.playList.toggleList();
+    },
     open() {
       this.setFullScrenn(true);
     },
@@ -159,10 +177,10 @@ export default {
       if (!this.onReady) {
         return;
       }
-      if(this.mode===playMode.random){
-        return this.setCurrentIndex(random(0,this.playlist.length-1));
+      if (this.mode === playMode.random) {
+        return this.setCurrentIndex(random(0, this.playlist.length - 1));
       }
-      if(this.mode === playMode.loop || this.playlist.length === 1){
+      if (this.mode === playMode.loop || this.playlist.length === 1) {
         return this.loop();
       }
       let index = this.currentIndex + 1;
@@ -206,7 +224,7 @@ export default {
     },
     timeupdate(e) {
       this.currentTime = e.target.currentTime;
-      this.percent = this.currentTime / this.currentSong.duration;
+      this.percent = this.currentTime / (this.currentSong && this.currentSong.duration);
     },
     playEnd() {
       if (this.mode === playMode.loop) {
@@ -230,7 +248,7 @@ export default {
         if (lineNum < 5) {
           this.$refs.lyricScroll.scrollToElement(this.$refs.lyricGroup[0]);
         } else {
-          this.$refs.lyricScroll.scrollToElement(
+          this.$refs.lyricScroll && this.$refs.lyricScroll.scrollToElement(
             this.$refs.lyricGroup[lineNum - 5],
             500
           );
@@ -253,6 +271,7 @@ export default {
         Vue.set(this.currentSong, "commont", JSON.parse(JSON.stringify(res)));
       });
     },
+    showList() {},
 
     ...mapMutations({
       setPlaying: "SET_PLAYING",
@@ -267,8 +286,7 @@ export default {
     });
     this.$nextTick(() => {
       this.swiper = new Swiper(this.$refs.swiper, {
-        observer: true,
-
+        observer: true
       });
     });
   },
@@ -303,18 +321,20 @@ export default {
           this.togglePlay();
         }
         if (!song.lyric) {
-          song.getSongLyric();
+          song && song.getSongLyric();
         }
         if (!song.commont) {
-          song.getSongCommont(this.page);
+          song && song.getSongCommont(this.page);
         }
         if (!song.url) {
-          getSongUrl(song.rid).then(res => {
-            Vue.set(song, "url", res.url);
-          }).catch(()=>{
-            this.onReady = true;
-            this.$refs.dialog.show();
-          })
+          song && getSongUrl(song.rid)
+            .then(res => {
+              Vue.set(song, "url", res.url);
+            })
+            .catch(() => {
+              this.onReady = true;
+              this.$refs.dialog.show();
+            });
         }
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
@@ -329,14 +349,21 @@ export default {
       }
     },
     playing(p) {
-      p ? this.$refs.audio.play() : this.$refs.audio.pause();
+      if(p){
+        this.$refs.audio.play();
+        this.lyric && this.lyric.togglePlay();
+      }else{
+        this.$refs.audio.pause();
+        this.lyric && this.lyric.togglePlay();
+      }
     }
   },
   components: {
     Progress,
     ProgressCircle,
     Commont,
-    Dialog
+    Dialog,
+    PlayList
   }
 };
 </script>
@@ -344,6 +371,7 @@ export default {
 <style scoped lang='scss'>
 .player {
   position: relative;
+  
   .player-full {
     &.slide-full-enter-active,
     &.slide-full-leave-active {
@@ -558,6 +586,11 @@ export default {
       }
     }
     .playlist {
+      width: 30px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: absolute;
       right: 10px;
     }

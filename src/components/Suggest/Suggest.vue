@@ -11,7 +11,7 @@
       >
         <div>
           <ul v-show="mode===0" class="song-list">
-            <li class="item" v-for="(song, index) in songs" :key="index" @click="_insertSong(song)">
+            <li class="item" v-for="(song, index) in songs" :key="index" @click.stop="_insertSong(song)">
               <div class="icon">
                 <i class="iconfont icon-icmusicnotepx"></i>
               </div>
@@ -38,13 +38,17 @@
         </div>
       </scroll>
     </div>
-    <div class="loading-wrapper" v-show="isLoading">
-      <loading />
-      <span>搜索中...</span>
-    </div>
-    <div class="loading-wrapper" v-if="loadingResult">
-      <span>啥都木有搜到哦</span>
-    </div>
+    <transition name="loading">
+      <div class="loading-wrapper" v-show="isLoading">
+        <loading />
+        <span>搜索中...</span>
+      </div>
+    </transition>
+    <transition name="loading">
+      <div class="loading-wrapper" v-if="loadingResult">
+        <span>啥都木有搜到哦</span>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -85,8 +89,8 @@ export default {
     // }
   },
   methods: {
-    searchMusic(key,pull) {
-      if(!pull){
+    searchMusic(key, pull) {
+      if (!pull) {
         this.isLoading = true;
       }
       this.page++;
@@ -114,15 +118,13 @@ export default {
           this.isLoading = false;
           if (!this.songs.length) {
             this.loadingResult = true;
-            setTimeout(() => {
-              this.loadingResult = false;
-            }, 2000);
           }
         }
       });
     },
     searchArtist(key) {
       this.isLoading = true;
+      this.loadingResult = false;
       getArtistByKey(key, this.singerPage, this.num).then(res => {
         if (res.code === ERR_OK) {
           if (
@@ -135,9 +137,6 @@ export default {
             this.isLoading = false;
             if (!this.singers.length) {
               this.loadingResult = true;
-              setTimeout(() => {
-                this.loadingResult = false;
-              }, 2000);
             }
           }
         }
@@ -173,11 +172,14 @@ export default {
     },
     scrollToEnd() {
       if (this.mode === 0) {
-        this.searchMusic(this.keyword,'flag');
+        this.searchMusic(this.keyword, "flag");
       }
     },
-    _insertSong() {},
-    ...mapActions(["insertSong"]),
+    _insertSong(song) {
+      this.insertSong(song);
+      this._saveHistory(this.keyword);
+    },
+    ...mapActions(["insertSong", "_saveHistory"]),
     ...mapMutations({
       setSinger: "SET_SINGER"
     })
@@ -218,22 +220,24 @@ export default {
 .sug {
   width: 100%;
   height: 100%;
+  .loading-enter-active, .loading-leave-active{
+    transition: all .3s ease;
+  }
+  .loading-enter, .loading-leave-to{
+    opacity: 0;
+  }
   > .loading-wrapper {
-    line-height: 1.5;
-    width: px2rem(200);
-    padding: 15px;
     display: flex;
+    justify-content: space-around;
+    flex-direction: column;
     font-size: $font-size-l;
     align-items: center;
-    background-color: $bg-hig-color;
-    border-radius: 5px;
     position: absolute;
     left: 50%;
     top: 40%;
     transform: translate(-50%, -50%);
-    box-shadow: 0px 0px 20px 0px $text-color-d;
     span {
-      padding-left: 10px;
+      padding: 10px;
     }
   }
   .suggest {

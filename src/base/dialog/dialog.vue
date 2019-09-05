@@ -43,11 +43,13 @@ export default {
     },
     handleCancel(){
         this.hide();
-        this.$$emit('handleCancel');
+        this.$emit('handleCancel');
+        return false;
     },
     handleOK(){
         this.hide();
         this.$emit('handleOK');
+        return true;
     }
   }
 };

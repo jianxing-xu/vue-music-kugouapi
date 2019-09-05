@@ -2,10 +2,10 @@
   <!--根组件-->
   <div class="search-box">
     <div class="input-box">
-      <input type="text" v-model="key" ref="key" @focus="focus" :placeholder="placeholder"/>
+      <input type="text" v-model="key" ref="key" :placeholder="placeholder"/>
       <i class="iconfont icon-delete" v-show="key" @click="chearKey"></i>
     </div>
-    <div class="suggest-key" v-show="key && isFocus">
+    <!-- <div class="suggest-key" v-show="key && isFocus">
       <scroll>
         <ul>
           <li v-for="(item, index) in sug" :key="index" @click="searchKey(item)">
@@ -14,14 +14,13 @@
           </li>
         </ul>
       </scroll>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { getSuggestKey } from "@/api/search";
 import { ERR_OK } from "@/api/config";
-import { mapActions } from 'vuex'
+import { debounce } from '@/assets/js/util'
 
 export default {
   props:{
@@ -37,71 +36,22 @@ export default {
       isFocus: true,
     };
   },
-  computed: {
-    firstKey() {
-      return this.key ? this.key : "";
-    }
-  },
   methods: {
-    focus() {
-      this.isFocus = true;
-    },
-    blur() {
-      this.$refs.key.blur();
-      this.isFocus = false;
-      console.log(this.isFocus);
-    },
     setKey(key) {
       this.key = key;
     },
     exprotKey(item) {
       this.$emit("exportKey", item);
     },
-    _getSuggestKey(key) {
-      this.sug = [];
-      if (!key) {
-        return;
-      }
-      getSuggestKey(key).then(res => {
-        if (res.code === ERR_OK) {
-          if (this.key) {
-            this.sug.push(this.firstKey);
-          }
-          this.sug = this.sug.concat(this.normallize(res.data));
-        }
-      });
-    },
-    normallize(suggest) {
-      let ret = [];
-      suggest.forEach(sug => {
-        ret.push((sug.match(/(.+)=(.*)/) && sug.match(/(.+)=(.*)/)[2]) || sug);
-      });
-      return ret;
-    },
-    searchKey(item) {;
-      this.blur();
-      this.setKey(item);
-      this.exprotKey(item);
-      this._saveHistory(item);
-    },
     chearKey(){
       this.key = '';
-      this.$emit('clearKey');
     },
-
-
-
-    ...mapActions(['_saveHistory'])
   },
-  watch: {
-    key: {
-      handler(key,oldKey) {
-        this._getSuggestKey(key);
-        if(key === ''){
-          this.$emit('keyEmpty');
-        }
-      }
-    }
+  created(){
+    // 截留导出结果
+    this.$watch('key',debounce((key)=>{
+      this.exprotKey(key);
+    },300))
   }
 };
 </script>

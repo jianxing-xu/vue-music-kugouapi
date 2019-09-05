@@ -42,6 +42,10 @@ export function deleteHistory(key){
     storage.set(SEARCH_KEY,searchs);
     return searchs;
 }
+export function clearHistory(){
+    storage.remove(SEARCH_KEY);
+    return [];
+}
 export function loadHistory(){
     return storage.get(SEARCH_KEY,[]);
 }
