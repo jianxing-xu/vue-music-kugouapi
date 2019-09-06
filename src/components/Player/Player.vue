@@ -75,8 +75,8 @@
             <div class="next" @click.stop="next">
               <i class="iconfont icon-kuaijin"></i>
             </div>
-            <div class="favorite">
-              <i class="iconfont icon-favorite"></i>
+            <div class="favorite" @click="_favorite">
+              <i class="iconfont icon-favorite" :class="likeIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -130,13 +130,14 @@ import Swiper from "swiper";
 import Lyric from "lyric-parser";
 import { playMode } from "@/assets/js/config";
 import { getSongUrl, getCommont } from "@/api/song";
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions} from "vuex";
 import Progress from "@/base/progress/progress.vue";
 import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import Dialog from "@/base/dialog/dialog.vue";
 import PlayList from "@/components/PlayList/PlayList.vue"
 import { random } from "@/assets/js/util";
+import { toggleFavorite } from '@/assets/js/cache'
 export default {
   data() {
     return {
@@ -166,7 +167,6 @@ export default {
     },
     error() {},
     togglePlay() {
-      this.lyric && this.lyric.togglePlay();
       if (!this.playing) {
         this.setPlaying(true);
       } else {
@@ -201,7 +201,6 @@ export default {
     changeMode() {
       let mode = this.mode;
       mode = (mode + 1) % 3;
-      console.log(mode);
       this.setPlayMode(mode);
     },
     loop() {
@@ -272,13 +271,27 @@ export default {
       });
     },
     showList() {},
+    _favorite(){
+      this._toggleFavorite(this.currentSong);
+    },
+    likeIcon(song){
+      let index = this.favorite.findIndex(item => {
+        return item.rid == song.rid;
+      });
+      if(index > -1){
+        return 'active'
+      }else{
+        return '';
+      }
+    },
 
     ...mapMutations({
       setPlaying: "SET_PLAYING",
       setFullScrenn: "SET_FULLSCRENN",
       setCurrentIndex: "SET_CURRENTINDEX",
       setPlayMode: "SET_PLAYMODE"
-    })
+    }),
+    ...mapActions(['_toggleFavorite'])
   },
   mounted() {
     window.addEventListener("resize", () => {
@@ -307,7 +320,8 @@ export default {
       "playlist",
       "mode",
       "currentSong",
-      "currentIndex"
+      "currentIndex",
+      "favorite"
     ])
   },
 
@@ -351,10 +365,10 @@ export default {
     playing(p) {
       if(p){
         this.$refs.audio.play();
-        this.lyric && this.lyric.togglePlay();
+        this.lyric.togglePlay();
       }else{
         this.$refs.audio.pause();
-        this.lyric && this.lyric.togglePlay();
+        this.lyric.togglePlay();
       }
     }
   },
@@ -536,6 +550,9 @@ export default {
         }
         .play-mode > .iconfont,
         .favorite > .iconfont {
+          &.active{
+            color: $theme-like;
+          }
           font-size: $font-size-l;
         }
         .next > .iconfont,

@@ -36,7 +36,7 @@
                     </span>
                   </div>
                   <div>
-                    <i class="iconfont icon-xiai"></i>
+                    <i class="iconfont icon-favorite" :class="likeIcon(song)" @click.stop="_toggleFavorite(song)"></i>
                     <i class="iconfont icon-download" @click.stop="deleteSong(index)"></i>
                   </div>
                 </li>
@@ -72,7 +72,7 @@ export default {
     modeText(){
         return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
     },
-    ...mapGetters(["playlist", "currentIndex","mode"])
+    ...mapGetters(["playlist", "currentIndex","mode","favorite"])
   },
   methods: {
     toggleList() {
@@ -92,7 +92,6 @@ export default {
     changeMode() {
       let mode = this.mode;
       mode = (mode + 1) % 3;
-      console.log(mode);
       this.setPlayMode(mode);
     },
     clearTip(){
@@ -102,6 +101,17 @@ export default {
         this.clearPlaylist();
         this.isShow = false;
     },
+    likeIcon(song){
+      let index = this.favorite.findIndex(item => {
+        return item.rid == song.rid;
+      });
+      console.log(index);
+      if(index > -1){
+        return 'active'
+      }else{
+        return '';
+      }
+    },
 
 
 
@@ -110,7 +120,7 @@ export default {
         setPlayMode: 'SET_PLAYMODE',
         setCurrentIndex: 'SET_CURRENTINDEX',
     }),
-    ...mapActions(['deleteSong','clearPlaylist'])
+    ...mapActions(['deleteSong','clearPlaylist','_toggleFavorite'])
   },
   components:{
       Dialog
@@ -176,8 +186,15 @@ export default {
         padding: 0 15px;
         box-sizing: border-box;
         border-bottom: 1px solid $text-color-d;
-        &.curr * {
-          color: $theme-color !important;
+        .icon-favorite{
+          &.active{
+            color: $theme-like;
+          }
+        }
+        &.curr{
+          .icon-Playing,.text{
+            color: $theme-color;
+          }
         }
         .text {
           .split {

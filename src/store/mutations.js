@@ -29,5 +29,8 @@ export default {
     },
     [types.SET_HISTORY](state,his){
         state.his = his;
+    },
+    [types.SET_FAVORITE](state,favorite){
+        state.favorite = favorite;
     }
 }
