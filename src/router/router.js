@@ -57,6 +57,10 @@ export default new Router({
       ]
     },
     {
+      path: '/mine',
+      component: () => import('@/views/Mine/Mine.vue')
+    },
+    {
       path: '',
       redirect: '/recommend'
     }

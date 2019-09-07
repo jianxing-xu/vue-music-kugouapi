@@ -176,6 +176,7 @@ export default {
       }
     },
     _insertSong(song) {
+      this.$emit('clickResult');
       this.insertSong(song);
       this._saveHistory(this.keyword);
     },
@@ -220,6 +221,7 @@ export default {
 .sug {
   width: 100%;
   height: 100%;
+  background-color: $bg-color;
   .loading-enter-active, .loading-leave-active{
     transition: all .3s ease;
   }

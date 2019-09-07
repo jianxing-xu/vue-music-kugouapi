@@ -13,4 +13,5 @@ export default {
     SET_HISTORY: "SET_HISTORY",
 
     SET_FAVORITE: "SET_FAVORITE",
+    SET_PLAYED: "SET_PLAYED",
 }

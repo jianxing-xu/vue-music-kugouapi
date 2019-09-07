@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="header-wrapper">
-      <Header @selectSearch="search" />
+      <Header @selectSearch="search" @selectMine="selectMine" />
     </div>
     <div class="tab-wrapper">
       <Tab :items="tabItem" />
@@ -36,6 +36,11 @@ export default {
   methods:{
     search(){
       this.$router.push('/search');
+    },
+    selectMine(){
+      this.$router.push({
+        path: '/mine'
+      })
     }
   },
   components: {

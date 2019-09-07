@@ -41,7 +41,7 @@
                   </div>
                 </li>
               </ul>
-              <div class="add">
+              <div class="add" @click="addToList">
                 <i class="iconfont icon-zengjia"></i>
                 <span>添加歌曲到队列</span>
               </div>
@@ -51,6 +51,7 @@
         <div class="close" @click.stop="toggleList">关闭</div>
       </div>
       <Dialog ref="tip" msg="确定清除全部吗？" ok="是的" cancel="不要" @handleOK="_clearPlaylist" />
+      <AddSong ref="add" />
     </div>
   </transition>
 </template>
@@ -59,6 +60,7 @@
 import { playMode } from '@/assets/js/config'
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import Dialog from '@/base/dialog/dialog.vue'
+import AddSong from '@/components/AddSong/AddSong.vue'
 export default {
   data() {
     return {
@@ -105,12 +107,14 @@ export default {
       let index = this.favorite.findIndex(item => {
         return item.rid == song.rid;
       });
-      console.log(index);
       if(index > -1){
         return 'active'
       }else{
         return '';
       }
+    },
+    addToList(){
+      this.$refs.add.show();
     },
 
 
@@ -123,7 +127,8 @@ export default {
     ...mapActions(['deleteSong','clearPlaylist','_toggleFavorite'])
   },
   components:{
-      Dialog
+      Dialog,
+      AddSong,
   }
 };
 </script>

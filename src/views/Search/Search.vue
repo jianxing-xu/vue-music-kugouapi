@@ -13,7 +13,7 @@
       <div class="switch-wrapper">
         <switch-c :current="switchCurrent" @changeCurrent="changeCurrent" :items="switches" />
       </div>
-      <div class="word" v-show="!key">
+      <div class="word" ref="word" v-show="!key">
         <scroll :data="hot.concat(his)">
           <div>
             <div class="hot-key">
@@ -39,7 +39,7 @@
           </div>
         </scroll>
       </div>
-      <div class="suggest-wrapper" v-show="key">
+      <div class="suggest-wrapper" ref="sug" v-show="key">
         <Suggest :keyword="key" :mode="switchCurrent"/>
       </div>
       <Dialog ref="dialog" msg="需要清除全部吗？" ok="是的" cancel="不要" @handleOK="clearKey" />
@@ -55,7 +55,9 @@ import Dialog from "@/base/dialog/dialog.vue";
 import { ERR_OK } from "@/api/config";
 import { getSuggestKey } from "@/api/search";
 import { mapGetters, mapActions } from "vuex";
+import { playlistMixin} from '@/assets/js/mixin'
 export default {
+  mixins:[playlistMixin],
   name: "search",
   data() {
     return {
@@ -89,6 +91,11 @@ export default {
     },
     selectKey(key) {
       this.$refs.sb.setKey(key);
+    },
+    handlePlaylist(list){
+      const bottom = list.length ? '60px' : '';
+      this.$refs.sug.style.bottom = bottom;
+      this.$refs.word.style.bottom = bottom;
     },
 
     ...mapActions(["_deleteHistory", "_clearHistory"])

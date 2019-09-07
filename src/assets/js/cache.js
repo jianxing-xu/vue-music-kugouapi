@@ -34,6 +34,19 @@ const deleteToArr = (arr,compare) => {
     };
 }
 
+
+export function savePlayHis(song){
+    let plays = storage.get(PLAY_KEY,[]);
+    insertToArr(plays,song,(item)=>{
+        return item.rid === song.rid;
+    },PLAY_LEN);
+    storage.set(PLAY_KEY,plays);
+    return plays;
+}
+export function loadPlayHis(){
+    return storage.get(PLAY_KEY,[]);
+}
+
 // saveHistory
 
 export function saveHistory(key){

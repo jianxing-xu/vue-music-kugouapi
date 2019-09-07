@@ -32,5 +32,8 @@ export default {
     },
     [types.SET_FAVORITE](state,favorite){
         state.favorite = favorite;
+    },
+    [types.SET_PLAYED](state,played){
+        state.played = played;
     }
 }

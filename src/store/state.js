@@ -1,6 +1,6 @@
 
 import { playMode } from "@/assets/js/config"
-import { loadHistory,loadFavorite } from "@/assets/js/cache"
+import { loadHistory,loadFavorite, loadPlayHis } from "@/assets/js/cache"
 export default {
     singer: [],
     disc: {},
@@ -15,5 +15,7 @@ export default {
     favorite: loadFavorite(),
 
     his: loadHistory(),
+
+    played: loadPlayHis(),
 
 }

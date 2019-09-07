@@ -1,7 +1,7 @@
 import types from './types'
 import { playMode } from '@/assets/js/config'
 import { random } from "@/assets/js/util"
-import { saveHistory, deleteHistory, clearHistory, toggleFavorite } from '@/assets/js/cache'
+import { saveHistory, deleteHistory, clearHistory, toggleFavorite, savePlayHis } from '@/assets/js/cache'
 
 
 function findIndex(song, songs) {
@@ -93,5 +93,9 @@ export default {
     _toggleFavorite({commit,state},song){
         let favorite = toggleFavorite(song);
         commit(types.SET_FAVORITE,favorite);
-    }   
+    },
+    _savePlayHis({commit,state},song){
+        let played = savePlayHis(song);
+        commit(types.SET_PLAYED,played);
+    }
 }

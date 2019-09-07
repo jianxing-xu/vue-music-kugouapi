@@ -66,8 +66,8 @@ function lyricToStr(lyric=[]) {
 
 export function createSong(song) {
     return new Song({
-        songname: song.name,
-        albumname: song.album,
+        songname: song.name || song.songname,
+        albumname: song.album || song.albumname,
         albumid: song.albumid,
         albumpic: song.albumpic,
         artist: song.artist,
@@ -76,6 +76,6 @@ export function createSong(song) {
         rid: song.rid,
         pic: song.pic,
         pic120: song.pic120,
-        songTime: song.songTimeMinutes,
+        songTime: song.songTimeMinutes || song.songTime,
     })
 }

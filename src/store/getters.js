@@ -10,6 +10,7 @@ export default {
     currentSong: (state) => state.playlist[state.currentIndex],
     mode: (state) => state.mode,
     his: (state) => state.his,
-    favorite: (state) => state.favorite
+    favorite: (state) => state.favorite,
+    played: (state) => state.played
 
 }

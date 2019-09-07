@@ -100,7 +100,7 @@
             <i class="iconfont" :class="playIcon"></i>
           </progress-circle>
         </div>
-        <div class="playlist" @click.stop="showPlayList" >
+        <div class="playlist" @click.stop="showPlayList">
           <i class="iconfont icon-liebiao"></i>
         </div>
       </div>
@@ -120,7 +120,7 @@
       @scrollToEnd="scrollToEnd"
     />
     <Dialog ref="dialog" ok="下一首" @handleOK="next" cancel msg="此歌曲暂时无法播放" />
-    <play-list ref="playList"/>
+    <play-list ref="playList" />
   </div>
 </template>
 
@@ -130,14 +130,14 @@ import Swiper from "swiper";
 import Lyric from "lyric-parser";
 import { playMode } from "@/assets/js/config";
 import { getSongUrl, getCommont } from "@/api/song";
-import { mapGetters, mapMutations, mapActions} from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import Progress from "@/base/progress/progress.vue";
 import ProgressCircle from "@/base/progress-circle/progress-circle.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import Dialog from "@/base/dialog/dialog.vue";
-import PlayList from "@/components/PlayList/PlayList.vue"
+import PlayList from "@/components/PlayList/PlayList.vue";
 import { random } from "@/assets/js/util";
-import { toggleFavorite } from '@/assets/js/cache'
+//import { toggleFavorite } from "@/assets/js/cache";
 export default {
   data() {
     return {
@@ -149,11 +149,11 @@ export default {
       currentLyric: "",
       currentLine: 0,
       page: 1,
-      clickCommont: false,
+      clickCommont: false
     };
   },
   methods: {
-    showPlayList(){
+    showPlayList() {
       this.$refs.playList.toggleList();
     },
     open() {
@@ -184,7 +184,7 @@ export default {
         return this.loop();
       }
       let index = this.currentIndex + 1;
-      index = index === this.playlist.length - 1 ? 0 : index;
+      index = index == this.playlist.length ? 0 : index;
       this.setCurrentIndex(index);
     },
     prev() {
@@ -205,7 +205,7 @@ export default {
     },
     loop() {
       this.$refs.audio.currentTime = 0;
-      this.lyric.seek(0);
+      this.lyric && this.lyric.seek(0);
       this.$refs.audio.play();
     },
     pad(val, n = 2) {
@@ -223,7 +223,8 @@ export default {
     },
     timeupdate(e) {
       this.currentTime = e.target.currentTime;
-      this.percent = this.currentTime / (this.currentSong && this.currentSong.duration);
+      this.percent =
+        this.currentTime / (this.currentSong && this.currentSong.duration);
     },
     playEnd() {
       if (this.mode === playMode.loop) {
@@ -238,7 +239,7 @@ export default {
       this.setPlaying(true);
     },
     getLyric(str) {
-      if (str.code === -1) {
+      if (str && str.code === -1) {
         console.log("no lyric");
         this.currentLyric = str.text;
         return;
@@ -247,10 +248,11 @@ export default {
         if (lineNum < 5) {
           this.$refs.lyricScroll.scrollToElement(this.$refs.lyricGroup[0]);
         } else {
-          this.$refs.lyricScroll && this.$refs.lyricScroll.scrollToElement(
-            this.$refs.lyricGroup[lineNum - 5],
-            500
-          );
+          this.$refs.lyricScroll &&
+            this.$refs.lyricScroll.scrollToElement(
+              this.$refs.lyricGroup[lineNum - 5],
+              500
+            );
         }
         this.currentLyric = txt;
         this.currentLine = lineNum;
@@ -271,17 +273,17 @@ export default {
       });
     },
     showList() {},
-    _favorite(){
+    _favorite() {
       this._toggleFavorite(this.currentSong);
     },
-    likeIcon(song){
+    likeIcon(song) {
       let index = this.favorite.findIndex(item => {
         return item.rid == song.rid;
       });
-      if(index > -1){
-        return 'active'
-      }else{
-        return '';
+      if (index > -1) {
+        return "active";
+      } else {
+        return "";
       }
     },
 
@@ -291,7 +293,7 @@ export default {
       setCurrentIndex: "SET_CURRENTINDEX",
       setPlayMode: "SET_PLAYMODE"
     }),
-    ...mapActions(['_toggleFavorite'])
+    ...mapActions(["_toggleFavorite", "_savePlayHis"])
   },
   mounted() {
     window.addEventListener("resize", () => {
@@ -340,8 +342,11 @@ export default {
         if (!song.commont) {
           song && song.getSongCommont(this.page);
         }
-        if (!song.url) {
-          song && getSongUrl(song.rid)
+        if(song.url){
+          song.url = '';
+        }
+        song &&
+          getSongUrl(song.rid)
             .then(res => {
               Vue.set(song, "url", res.url);
             })
@@ -349,7 +354,6 @@ export default {
               this.onReady = true;
               this.$refs.dialog.show();
             });
-        }
         clearTimeout(this.timer);
         this.timer = setTimeout(() => {
           this.getLyric(song.lyric);
@@ -359,16 +363,17 @@ export default {
               this.onReady = true;
               this.$refs.dialog.show();
             });
+          this._savePlayHis(song);
         }, 1000);
       }
     },
     playing(p) {
-      if(p){
+      if (p) {
         this.$refs.audio.play();
-        this.lyric.togglePlay();
-      }else{
+        this.lyric && this.lyric.togglePlay();
+      } else {
         this.$refs.audio.pause();
-        this.lyric.togglePlay();
+        this.lyric && this.lyric.togglePlay();
       }
     }
   },
@@ -385,7 +390,7 @@ export default {
 <style scoped lang='scss'>
 .player {
   position: relative;
-  
+
   .player-full {
     &.slide-full-enter-active,
     &.slide-full-leave-active {
@@ -458,9 +463,11 @@ export default {
           text-align: center;
           line-height: 2.5;
           color: $text-color-l;
-          font-size: $font-size-m;
+          font-size: $font-size;
           .lyric-line {
             &.current-line {
+              width:100%;
+              overflow: hidden;
               color: $text-color;
               transform: scale(1.1);
               transition: transform 0.5s;
@@ -481,8 +488,8 @@ export default {
             .current-lyric {
               display: inline-block;
               text-align: center;
-              width: px2rem(190);
-              font-size: $font-size-mm;
+              width: px2rem(280);
+              font-size: $font-size-m;
               color: $text-color-l;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -550,7 +557,7 @@ export default {
         }
         .play-mode > .iconfont,
         .favorite > .iconfont {
-          &.active{
+          &.active {
             color: $theme-like;
           }
           font-size: $font-size-l;
