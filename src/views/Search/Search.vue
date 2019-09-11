@@ -43,6 +43,9 @@
         <Suggest :keyword="key" :mode="switchCurrent"/>
       </div>
       <Dialog ref="dialog" msg="需要清除全部吗？" ok="是的" cancel="不要" @handleOK="clearKey" />
+      <transition name="scale">
+        <router-view></router-view>
+      </transition>
     </div>
   </transition>
 </template>
@@ -125,6 +128,13 @@ export default {
   background-color: $bg-color;
   top: 0;
   left: 0;
+  .scale-enter, .scale-leave-to{
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  .scale-enter-active, .scale-leave-active{
+    transition: all .3s;
+  }
   .word {
     width: 100%;
     position: absolute;

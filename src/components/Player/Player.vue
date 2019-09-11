@@ -72,7 +72,7 @@
             <div class="play" @click.stop="togglePlay">
               <i class="iconfont" :class="playIcon"></i>
             </div>
-            <div class="next" @click.stop="next">
+            <div class="next" @click.stop="next" ref="next">
               <i class="iconfont icon-kuaijin"></i>
             </div>
             <div class="favorite" @click="_favorite">
@@ -107,7 +107,7 @@
     </transition>
     <audio
       ref="audio"
-      :src="currentSong.url || ''"
+      :src="currentSong.url"
       @play="canplay"
       @timeupdate="timeupdate"
       @ended="playEnd"
@@ -165,12 +165,15 @@ export default {
     canplay() {
       this.onReady = true;
     },
-    error() {},
+    error() {
+    },
     togglePlay() {
       if (!this.playing) {
         this.setPlaying(true);
+        this.lyric && this.lyric.togglePlay();
       } else {
         this.setPlaying(false);
+        this.lyric && this.lyric.togglePlay();
       }
     },
     next() {
@@ -330,51 +333,55 @@ export default {
   watch: {
     currentSong: {
       immediate: true,
-      handler(song) {
-        this.lyric && this.lyric.stop();
-        this.lyric = null;
-        if (!this.playing) {
-          this.togglePlay();
+      handler(song, oldSong) {
+        if (oldSong) {
+          if (song.rid === oldSong.rid) {
+            console.log("===");
+            return;
+          }
         }
+        this.lyric && this.lyric.stop();
         if (!song.lyric) {
           song && song.getSongLyric();
         }
         if (!song.commont) {
           song && song.getSongCommont(this.page);
         }
-        if(song.url){
+        if(!song.url){
           song.url = '';
         }
+        //
         song &&
           getSongUrl(song.rid)
             .then(res => {
-              Vue.set(song, "url", res.url);
+              song.url = res.url;
+              clearTimeout(this.timer);
+              this.timer = setTimeout(() => {
+                this.$refs.audio.play().then(() => {
+                  this.setPlaying(true);
+                  this.getLyric(song.lyric);
+                }).catch(e=>{
+                  this.setPlaying(false);
+                  this.getLyric(song.lyric);
+                  this.lyric && this.lyric.togglePlay();
+                })
+              }, 1000);
+              this._savePlayHis(song);
             })
-            .catch(() => {
+            .catch(err => {
               this.onReady = true;
               this.$refs.dialog.show();
             });
-        clearTimeout(this.timer);
-        this.timer = setTimeout(() => {
-          this.getLyric(song.lyric);
-          song.url &&
-            this.$refs.audio.play().catch(err => {
-              console.log(err);
-              this.onReady = true;
-              this.$refs.dialog.show();
-            });
-          this._savePlayHis(song);
-        }, 1000);
       }
     },
     playing(p) {
-      if (p) {
-        this.$refs.audio.play();
-        this.lyric && this.lyric.togglePlay();
-      } else {
-        this.$refs.audio.pause();
-        this.lyric && this.lyric.togglePlay();
-      }
+      this.$nextTick(() => {
+        if (p) {
+          this.$refs.audio.play();
+        } else {
+          this.$refs.audio.pause();
+        }
+      });
     }
   },
   components: {
@@ -442,6 +449,7 @@ export default {
         justify-content: space-evenly;
         .singer,
         .title {
+          line-height: px2rem(24);
           width: px2rem(200);
           white-space: nowrap;
           overflow: hidden;
@@ -466,7 +474,7 @@ export default {
           font-size: $font-size;
           .lyric-line {
             &.current-line {
-              width:100%;
+              width: 100%;
               overflow: hidden;
               color: $text-color;
               transform: scale(1.1);
@@ -635,7 +643,7 @@ export default {
       display: flex;
       flex-direction: column;
       margin-left: 15px;
-      justify-content: space-evenly;
+      justify-content: space-around;
       .song-name {
         font-size: $font-size-m;
       }

@@ -50,9 +50,12 @@ export default {
   top: 0;
   width: 100%;
   background-color: $theme-color-top;
-  font-size: $font-size-mm;
+  font-size: $font-size-m;
   height: 60px;
   line-height: 60px;
   text-align: center;
+  .iconfont{
+    color: $theme-color;
+  }
 }
 </style>

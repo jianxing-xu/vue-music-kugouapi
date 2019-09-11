@@ -17,11 +17,11 @@ export default {
             commit(types.SET_FULLSCRENN, true);
             return;
         } else {
-            commit(types.SET_PLAYING, true);
-            commit(types.SET_FULLSCRENN, true);
             commit(types.SET_PLAYLIST, Songs);
             commit(types.SET_SEQUENCELIST, Songs);
             commit(types.SET_CURRENTINDEX, index);
+            commit(types.SET_FULLSCRENN, true);
+            commit(types.SET_PLAYING, true);
         }
     },
     randomAll({ commit, state }, songs) {

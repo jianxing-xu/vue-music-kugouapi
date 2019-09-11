@@ -10,13 +10,20 @@ export default new Router({
   routes: [
     {
       path: '/search',
-      component: () => import('@/views/Search/Search.vue')
+      component: () => import('@/views/Search/Search.vue'),
+      children:[
+        {
+          path: ':id',
+          component: ()=> import('@/components/SingerDetail/SingerDetail.vue')
+        }
+      ]
     },
     {
       path: '/recommend',
       component: () => import('@/views/Recommend/Recommend.vue'),
       children:[
         {
+          name: 'search-singer',
           path: ':id',
           component: () => import('@/components/DiscDetail/DiscDetail.vue')
         }

@@ -129,8 +129,11 @@ export default {
     .scroll {
       .more-loading {
         width: 100%;
+        height: 50px;
         display: flex;
+        align-items: top;
         justify-content: center;
+        margin-bottom: 10px;
       }
     }
     .loading-wrapper {

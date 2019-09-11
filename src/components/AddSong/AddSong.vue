@@ -47,6 +47,7 @@ import Suggest from "@/components/Suggest/Suggest.vue";
 import Dialog from "@/base/dialog/dialog.vue";
 import SongList from "@/base/song-list/song-list.vue";
 import TopTip from "@/base/toptip/toptip.vue"
+import { createSong } from "@/assets/js/song"
 
 import { mapGetters, mapActions } from "vuex";
 export default {
@@ -86,7 +87,7 @@ export default {
     },
     selectItem(song,index){
       this.$refs.tip.showTip();
-      this.insertSong(song);
+      this.insertSong(createSong(song));
     },
     clickResult(){
         this.$refs.tip.showTip();

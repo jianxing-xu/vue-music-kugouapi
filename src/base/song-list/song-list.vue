@@ -59,6 +59,7 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
+        line-height: px2rem(25);
         height: 100%;
         margin-left: 15px;
         .title,.text{

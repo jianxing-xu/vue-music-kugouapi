@@ -187,7 +187,7 @@ export default {
   }
   &.scale-enter,
   &.scale-leave-to {
-    transform: scale(1.2);
+    transform: scale(0.9);
     opacity: 0;
   }
 }

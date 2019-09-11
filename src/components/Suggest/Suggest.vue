@@ -58,7 +58,6 @@ import { createSong } from "@/assets/js/song";
 import { Singer } from "@/assets/js/singer";
 import { ERR_OK } from "@/api/config";
 import { mapMutations, mapActions } from "vuex";
-import { setTimeout } from "timers";
 export default {
   props: {
     keyword: {
@@ -167,8 +166,9 @@ export default {
     goSinger(singer) {
       this.setSinger(singer);
       this.$router.push({
-        path: `/singer/${singer.id}`
+        path: `/search/${singer.id}`
       });
+      this._saveHistory(this.keyword);
     },
     scrollToEnd() {
       if (this.mode === 0) {
@@ -272,7 +272,7 @@ export default {
             border-radius: 100%;
           }
           span {
-            width: px2rem(300);
+            width: px2rem(250);
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;

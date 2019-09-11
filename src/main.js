@@ -10,6 +10,11 @@ import Loading from '@/base/loading/loading.vue'
 Vue.component('scroll',Scroll)
 Vue.component('loading',Loading)
 import LazyLoad from 'vue-lazyload'
+// import vConsole from 'vconsole'
+
+// let vc = new vConsole();
+import fastclick from 'fastclick'
+fastclick.attach(document.body);
 Vue.use(LazyLoad,{
   loading: require('@/assets/img/logo@3x.png'),
   error: require('@/assets/img/logo@3x.png')

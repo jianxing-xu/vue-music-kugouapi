@@ -3,8 +3,7 @@
   <div class="header">
     <i class="iconfont icon-cx" @click="search"></i>
     <div class="logo">
-      <img height="43" :src="require('@/assets/img/logo-1.png')" alt />
-      <span class="text">music</span>
+      <span class="text">Dark Music</span>
     </div>
     <i class="iconfont icon-mine1" @click="mine"></i>
   </div>
@@ -30,6 +29,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 30px;
   i {
     font-size: $font-size-l;
   }
@@ -37,7 +37,8 @@ export default {
       display: flex;
       align-items: center;
       .text{
-          font-size: $font-size-ll;
+          font-size: $font-size-l;
+          font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
       }
       img{
           display: inline-block;

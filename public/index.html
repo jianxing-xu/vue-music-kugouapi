@@ -12,7 +12,30 @@
     <link rel="stylesheet" href="<%= BASE_URL %>fonts/montserrat.css">
     <link rel="stylesheet" href="<%= BASE_URL %>fonts/tangerine.css"> -->
   <link rel="stylesheet" href="http://at.alicdn.com/t/font_1375143_206e91jpbmn.css">
-  <title>mc</title>
+  <title>Dark Music</title>
+  <style>
+    body,html{
+      width: 100%;
+      height: 100%;
+    }
+    #app{
+      width: 100%;
+      height: 100%;
+      background-color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #app .home{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: #999;
+      font-size: 35px;
+      font-weight: 600;
+    }
+  </style>
 </head>
 
 <body ontouchmove="event.preventDefault()">
@@ -20,7 +43,11 @@
     <strong>We're sorry but web-book doesn't work properly without JavaScript enabled. Please enable it to
       continue.</strong>
   </noscript>
-  <div id="app"></div>
+  <div id="app">
+    <div class="home">
+      <span>Dark Music...</span>
+    </div>
+  </div>
   <!-- built files will be auto injected -->
 </body>
 <script>

@@ -1,6 +1,7 @@
 module.exports = {
     devServer: {
-        host: '49.235.175.45',
+        host: '192.168.1.6',
+        disableHostCheck: true,
         proxy: {
             '/getSlider': {
                 target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg',

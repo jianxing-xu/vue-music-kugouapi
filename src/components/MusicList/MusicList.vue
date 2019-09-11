@@ -10,6 +10,7 @@
       </div>
     </div>
     <div class="filter" :style="bgImg" ref="bgImg"></div>
+    <div class="filter"></div>
     <div class="content" ref="content">
       <div class="avatar">
         <img :src="info.pic300 || info.img || info.pic || require('@/assets/img/default.jpeg')" />
@@ -41,7 +42,7 @@
         </div>
       </scroll>
     </div>
-    <div class="commont-btn" @click="clickCommont">
+    <div class="commont-btn" @click="clickCommont" v-if="!info.fans">
       <i class="iconfont icon-commont"></i>
     </div>
     <Commont v-if="showCommont" ref="commont" :commont="commont" @scrollToEnd="scrollToEnd" />
