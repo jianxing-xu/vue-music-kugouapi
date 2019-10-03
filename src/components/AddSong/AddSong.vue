@@ -3,7 +3,7 @@
   <transition name="slide">
     <div class="add-song" v-if="isShow">
       <div class="search-wrapper">
-        <i class="iconfont icon-leftarrow" @click="hide"></i>
+        <i class="iconfont icon-fanhui" @click="hide"></i>
         <SearchBox ref="sb" @exportKey="exportKey" />
       </div>
       <div class="switch-wrapper">
@@ -134,11 +134,11 @@ export default {
     overflow: hidden;
   }
   .search-wrapper {
-    padding: 0 15px;
+    padding: 10px 15px 0;
     display: flex;
     align-items: center;
     .iconfont {
-      padding-right: 10px;
+      padding: 6px 14px 6px 0;
     }
   }
   .switch-wrapper {

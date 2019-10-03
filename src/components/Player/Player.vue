@@ -12,7 +12,7 @@
         </div>
         <div class="header">
           <span class="back" @click.prevent="back">
-            <i class="iconfont icon-downarrow"></i>
+            <i class="iconfont icon-fanhui"></i>
           </span>
           <div class="name">
             <span class="title" v-html="currentSong.songname"></span>
@@ -22,7 +22,7 @@
         <div class="middle">
           <div class="swiper-container" ref="swiper">
             <div class="swiper-wrapper">
-              <div class="swiper-slide cd">
+              <div class="swiper-slide cd" v-show="!horizontal">
                 <div class="cd-wrapper play" :class="{run:this.playing,pause:!this.playing}">
                   <div class="cd-img" ref="cdImg">
                     <img
@@ -59,7 +59,7 @@
         <div class="bottom">
           <div class="progress-wrapper">
             <span class="currentTime">{{formatTime(currentTime)}}</span>
-            <Progress :percent="percent" @barTouchEnd="barTouchEnd" />
+            <Progress :toProgress="toProgress" :percent="percent" @barTouchEnd="barTouchEnd" />
             <span class="duration">{{formatTime(currentSong && currentSong.duration)}}</span>
           </div>
           <div class="btn">
@@ -76,7 +76,7 @@
               <i class="iconfont icon-kuaijin"></i>
             </div>
             <div class="favorite" @click="_favorite">
-              <i class="iconfont icon-favorite" :class="likeIcon(currentSong)"></i>
+              <i class="iconfont icon-favorite1" :class="likeIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -113,12 +113,17 @@
       @ended="playEnd"
       @error="error"
     ></audio>
-    <Commont
-      v-if="clickCommont"
-      ref="commont"
-      :commont="currentSong.commont || {}"
-      @scrollToEnd="scrollToEnd"
-    />
+    <transition name="com-wrap" >
+      <div class="commont-wrapper" v-show="clickCommont">
+      <Commont
+        @hideCommont="hideCommont"
+        ref="commont"
+        :commont="currentSong.commont || {}"
+        @scrollToEnd="scrollToEnd"
+        :ani="'no-commont'"
+      />
+      </div>
+    </transition>
     <Dialog ref="dialog" ok="下一首" @handleOK="next" cancel msg="此歌曲暂时无法播放" />
     <play-list ref="playList" />
   </div>
@@ -149,7 +154,9 @@ export default {
       currentLyric: "",
       currentLine: 0,
       page: 1,
-      clickCommont: false
+      clickCommont: false,
+      horizontal: false,
+      toProgress: false
     };
   },
   methods: {
@@ -165,15 +172,13 @@ export default {
     canplay() {
       this.onReady = true;
     },
-    error() {
-    },
+    error() {},
     togglePlay() {
       if (!this.playing) {
         this.setPlaying(true);
-        this.lyric && this.lyric.togglePlay();
+        this.toProgress = true;
       } else {
         this.setPlaying(false);
-        this.lyric && this.lyric.togglePlay();
       }
     },
     next() {
@@ -245,15 +250,18 @@ export default {
       if (str && str.code === -1) {
         console.log("no lyric");
         this.currentLyric = str.text;
+        this.lyric = null;
         return;
       }
+      this.lyric && this.lyric.stop();
+      this.lyric = null;
       this.lyric = new Lyric(str, ({ lineNum, txt }) => {
         if (lineNum < 5) {
           this.$refs.lyricScroll.scrollToElement(this.$refs.lyricGroup[0]);
         } else {
           this.$refs.lyricScroll &&
             this.$refs.lyricScroll.scrollToElement(
-              this.$refs.lyricGroup[lineNum - 5],
+              this.$refs.lyricGroup[lineNum - 4],
               500
             );
         }
@@ -267,6 +275,9 @@ export default {
       this.$nextTick(() => {
         this.$refs.commont.show();
       });
+    },
+    hideCommont() {
+      this.clickCommont = false;
     },
     scrollToEnd() {
       this.page++;
@@ -308,6 +319,22 @@ export default {
       });
     });
   },
+  created() {
+    let _this = this;
+    window.addEventListener(
+      "onorientationchange" in window ? "orientationchange" : "resize",
+      function() {
+        if (window.orientation === 180 || window.orientation === 0) {
+          _this.horizontal = false;
+        }
+        if (window.orientation === 90 || window.orientation === -90) {
+          _this.horizontal = true;
+        }
+        this.swiper && this.swiper.updateSize();
+      },
+      false
+    );
+  },
   computed: {
     playIcon() {
       return this.playing ? "icon-bofang" : "icon-zanting";
@@ -336,7 +363,6 @@ export default {
       handler(song, oldSong) {
         if (oldSong) {
           if (song.rid === oldSong.rid) {
-            console.log("===");
             return;
           }
         }
@@ -347,9 +373,12 @@ export default {
         if (!song.commont) {
           song && song.getSongCommont(this.page);
         }
-        if(!song.url){
-          song.url = '';
+        // 重新获 url 的目的是 因为 我的喜欢  和最近播放中的 已经获取到的 url 会过期导致 无法播放的问题
+        if (!song.url) {
+          song.url = "";
         }
+        //正常播放前 不允许拖动进度条
+        this.toProgress = false;
         //
         song &&
           getSongUrl(song.rid)
@@ -357,14 +386,21 @@ export default {
               song.url = res.url;
               clearTimeout(this.timer);
               this.timer = setTimeout(() => {
-                this.$refs.audio.play().then(() => {
-                  this.setPlaying(true);
-                  this.getLyric(song.lyric);
-                }).catch(e=>{
-                  this.setPlaying(false);
-                  this.getLyric(song.lyric);
-                  this.lyric && this.lyric.togglePlay();
-                })
+                this.$refs.audio  
+                  .play()
+                  .then(() => {
+                    this.setPlaying(true);
+                    this.getLyric(song.lyric);
+                    this.toProgress = true;
+                  })
+                  //catch 捕获某些浏览器播放异常的时候 需要手动播放
+                  .catch(e => {
+                    console.log('播放异常');
+                    this.getLyric(song.lyric);
+                    this.setPlaying(false);
+                    this.onReady = true;
+                    //this.lyric && this.lyric.togglePlay();
+                  });
               }, 1000);
               this._savePlayHis(song);
             })
@@ -378,11 +414,17 @@ export default {
       this.$nextTick(() => {
         if (p) {
           this.$refs.audio.play();
+          this.lyric && this.lyric.togglePlay();
         } else {
           this.$refs.audio.pause();
+          this.lyric && this.lyric.togglePlay();
         }
       });
     }
+  },
+  destroyed () {
+    this.lyric && this.lyric.stop();
+    this.lyric = null;
   },
   components: {
     Progress,
@@ -396,29 +438,31 @@ export default {
 
 <style scoped lang='scss'>
 .player {
-  position: relative;
-
   .player-full {
+    overflow: hidden;
     &.slide-full-enter-active,
     &.slide-full-leave-active {
       transition: all 0.5s ease;
     }
     &.slide-full-enter,
     &.slide-full-leave-to {
-      transform: translateY(100%);
+      transform: translate3d(110%, 0, 0);
     }
-    width: 100vw;
-    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     font-size: $font-size-mm;
     .bgImg {
       position: absolute;
-      top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      filter: blur(20px);
-      z-index: -1;
+      top: 0;
+      width: 100%;
+      height: 100%;
       transform: scale(1.1);
+      z-index: -1;
+      filter: blur(20px);
       background: rgba(0, 0, 0, 1);
       img {
         opacity: 0.7;
@@ -435,6 +479,7 @@ export default {
         z-index: 51;
         position: absolute;
         left: px2rem(15);
+        padding: 8px;
         .iconfont {
           font-size: $font-size-ll;
         }
@@ -544,14 +589,13 @@ export default {
         position: relative;
         display: flex;
         align-items: center;
-        .currentTime {
-          position: absolute;
-          left: 0;
-          left: px2rem(10);
-        }
+        justify-content: center;
+        .currentTime,
         .duration {
-          position: absolute;
-          right: px2rem(10);
+          color: $text-color-l;
+          font-size: $font-size;
+          padding: 0 5px;
+          font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
         }
       }
       .btn {
@@ -567,8 +611,10 @@ export default {
         .favorite > .iconfont {
           &.active {
             color: $theme-like;
+            font-weight: bolder;
           }
           font-size: $font-size-l;
+          font-weight: bolder;
         }
         .next > .iconfont,
         .prev > .iconfont {
@@ -593,7 +639,6 @@ export default {
     }
     &.slide-enter,
     &.slide-leave-to {
-      transform: translateY(100%);
       opacity: 0;
     }
     .mini-cd {
@@ -661,6 +706,18 @@ export default {
   z-index: 100;
   position: fixed;
   top: 0;
+}
+.commont-wrapper {
+  width: 100%;
+  height: 100vh;
+  &.com-wrap-enter-active,
+  &.com-wrap-leave-active {
+    transition: all 0.4s ease;
+  }
+  &.com-wrap-enter,
+  &.com-wrap-leave-to {
+    transform: translateX(100%);
+  }
 }
 @keyframes rotate {
   0% {

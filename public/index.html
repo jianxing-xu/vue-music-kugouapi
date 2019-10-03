@@ -11,29 +11,25 @@
     <link rel="stylesheet" href="<%= BASE_URL %>fonts/daysOne.css">
     <link rel="stylesheet" href="<%= BASE_URL %>fonts/montserrat.css">
     <link rel="stylesheet" href="<%= BASE_URL %>fonts/tangerine.css"> -->
-  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1375143_206e91jpbmn.css">
-  <title>Dark Music</title>
+  <link rel="stylesheet" href="http://at.alicdn.com/t/font_1375143_odqtlydirq.css">
+  <title class="title">Dark Music</title>
   <style>
     body,html{
       width: 100%;
       height: 100%;
     }
+    .title{
+      font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    }
     #app{
       width: 100%;
       height: 100%;
-      background-color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    #app .home{
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
       color: #999;
-      font-size: 35px;
-      font-weight: 600;
+      justify-content: center;
+      background-color: #343534;
+      align-items: center;
     }
   </style>
 </head>
@@ -44,9 +40,8 @@
       continue.</strong>
   </noscript>
   <div id="app">
-    <div class="home">
-      <span>Dark Music...</span>
-    </div>
+    <img id="bg" src="https://blog-1259449432.cos.ap-shanghai.myqcloud.com/wrapper.jpg" width="200" height="200">
+    <p>加载中...</p>
   </div>
   <!-- built files will be auto injected -->
 </body>

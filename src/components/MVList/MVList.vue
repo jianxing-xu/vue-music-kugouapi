@@ -82,10 +82,8 @@ export default {
 
 <style scoped lang='scss'>
 .mv-list {
-  position: fixed;
   width: 100%;
-  top: px2rem(138);
-  bottom: 0;
+  height: 100%;
   box-sizing: border-box;
   font-size: $font-size-mm;
   color: $text-color-ll;

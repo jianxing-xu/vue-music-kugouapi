@@ -1,6 +1,6 @@
 module.exports = {
     devServer: {
-        host: '192.168.1.6',
+        host: '192.168.2.140',
         disableHostCheck: true,
         proxy: {
             '/getSlider': {

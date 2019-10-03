@@ -31,9 +31,9 @@ export default {
       let child = this.$refs.item;
       let width = 0;
       [].slice.call(child).forEach(item => {
-        width += item.clientWidth;
+        width += item.clientWidth+10;
       });
-      this.$refs.content.style.width = width + "px";
+      this.$refs.content.style.width = width + 50 + "px";
     },
     selectItem(index){
         if(index===this.currentIndex){
@@ -59,27 +59,33 @@ export default {
 
 <style scoped lang='scss'>
 .scroll-bar {
-  position: fixed;
-  top: px2rem(90);
+  position: absolute;
   left: 0;
   right: 0;
-  height: px2rem(48);
+  height: 100%;
   ul {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
   }
   .bar-item {
-    display: inline-block;
-    padding: 0 9px;
+    margin-left: 10px;
     text-align: center;
     font-size: $font-size-m;
+    &:last-child{
+      margin: 0 10px;
+    }
     span {
-      line-height: 2;
-      border-radius: 25px;
+      display: inline-block;
+      width: 100%;
       color: $text-color-ll;
     }
     &.active {
-      background-color: $theme-color-dd;
-      border-radius: 10px;
+      span{
+        color: $theme-color;
+        font-weight: bold;
+      }
     }
   }
 }

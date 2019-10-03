@@ -2,7 +2,7 @@
   <!--根组件-->
   <div class="recommend">
     <div class="content" ref="content">
-      <scroll class="scroll" @data="sliders.concat(disc)" @scrollToEnd="scrollToEnd" :purpul="true">
+      <scroll class="scroll" @data="sliders.concat(disc)" @scrollToEnd="scrollToEnd" :purpul="true" ref="scroll">
         <div>
           <Slider :images="sliders" />
           <div class="disc-wrapper">
@@ -50,7 +50,8 @@ export default {
       sliders: [],
       disc: [],
       page: 0,
-      isMore: true
+      isMore: true,
+      isLoading: false,
     };
   },
   computed: {},
@@ -78,6 +79,11 @@ export default {
             return (this.isMore = false);
           }
           this.disc = this.disc.concat(res.data.data);
+          // 数据请求之后 刷新 scrol
+          setTimeout(()=>{
+            this.isLoading = false;
+            this.$refs.scroll && this.$refs.scroll.refresh();
+          },20)
         }
       });
     },
@@ -88,7 +94,10 @@ export default {
       });
     },
     scrollToEnd() {
-      this._getDisc();
+      if(!this.isLoading){
+        this.isLoading = true;
+        this._getDisc();
+      }
     },
     handlePlaylist(list){
       const bottom = list.length ? '60px' : '';

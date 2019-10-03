@@ -3,7 +3,7 @@
   <div class="music-list" v-if="info">
     <div class="header" ref="header">
       <div class="back" @click="$router.back()">
-        <i class="iconfont icon-leftarrow"></i>
+        <i class="iconfont icon-fanhui"></i>
       </div>
       <div class="title">
         <h2 v-html="info.name"></h2>
@@ -53,11 +53,11 @@
 import SongList from "@/base/song-list/song-list.vue";
 import Commont from "@/components/Commont/Commont.vue";
 import { getCommont } from "@/api/song";
-import { mapActions, mapGetters, mapMutations} from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { digest } from "@/api/config";
 import { playlistMixin } from "@/assets/js/mixin";
-import { random } from "@/assets/js/util"
-import { playMode } from "@/assets/js/config"
+import { random } from "@/assets/js/util";
+import { playMode } from "@/assets/js/config";
 export default {
   mixins: [playlistMixin],
   props: {
@@ -83,9 +83,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["singer","mode"]),
+    ...mapGetters(["singer", "mode"]),
     bgImg() {
-      return `background: url("${(this.info && this.info.pic300 || require('@/assets/img/default.jpeg')) ||
+      return `background: url("${(this.info && this.info.pic300) ||
+        require("@/assets/img/default.jpeg") ||
         this.info.img ||
         this.info.pic}") no-repeat;
         background-size: cover`;
@@ -104,26 +105,35 @@ export default {
       this._pullY(y);
     },
     _pullY(y) {
-      if (y >= 0) {
-        this.$refs.content.style.zIndex = 10;
-        let scale = 1 + y / this.bgH;
-        this.$refs.bgImg.style["transform"] = `scale(${scale})`;
+      if (y >= -30) {
+        if (this.$refs.content.style.zIndex != 10) {
+          this.$refs.content.style.zIndex = 10;
+        }
+        //不要缩放
+        // let scale = 1 + y / this.bgH;
+        // this.$refs.bgImg.style["transform"] = `scale(${scale})`;
       } else {
-        this.$refs.content.style.zIndex = 0;
+        if (this.$refs.content.style.zIndex != 0) {
+          this.$refs.content.style.zIndex = 0;
+        }
         if (y < -(this.bgH - this.headerH)) {
-          this.$refs.list.style.top = this.headerH + "px";
-          this.$refs.list.style.paddingTop = this.bgH - this.headerH + "px";
+          if (this.$refs.list.style.top != this.headerH) {
+            this.$refs.list.style.top = this.headerH + "px";
+            this.$refs.list.style.paddingTop = this.bgH - this.headerH + "px";
+          }
         } else {
-          this.$refs.list.style.top = "0";
-          this.$refs.list.style.paddingTop = "60%";
+          if (this.$refs.list.style.top != "0") {
+            this.$refs.list.style.top = "0";
+            this.$refs.list.style.paddingTop = "60%";
+          }
         }
       }
     },
     selectItem(song, index) {
       this.selectPlay({ song, index, songs: this.songs });
     },
-    _randomAll(e){
-       this.randomAll(this.songs);
+    _randomAll(e) {
+      this.randomAll(this.songs);
     },
     clickCommont() {
       this.showCommont = true;
@@ -155,9 +165,9 @@ export default {
       this.$refs.scroll && this.$refs.scroll.refresh();
     },
 
-    ...mapActions(["selectPlay","randomAll"]),
+    ...mapActions(["selectPlay", "randomAll"]),
     ...mapMutations({
-      setPlayMode: "SET_PLAYMODE",
+      setPlayMode: "SET_PLAYMODE"
     })
   },
 
@@ -207,7 +217,7 @@ export default {
     display: flex;
     z-index: 50;
     .back {
-      padding-left: 15px;
+      padding: 0 15px 0;
     }
     .title {
       text-align: center;

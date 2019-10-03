@@ -4,7 +4,7 @@
     <div class="commont" v-if="showCommont && commont">
       <div class="header" v-if="header">
         <div class="back" @click="hide">
-          <i class="iconfont icon-leftarrow"></i>
+          <i class="iconfont icon-fanhui"></i>
         </div>
         <div class="title"></div>
       </div>
@@ -92,7 +92,10 @@ export default {
       this.showCommont = true;
     },
     hide() {
-      this.showCommont = false;
+      this.$emit('hideCommont');
+      setTimeout(()=>{
+        this.showCommont = false;
+      },500)
     },
     decode(code) {
       return decodeURIComponent(code);
@@ -112,20 +115,6 @@ export default {
 <style scoped lang='scss'>
 .commont {
   overflow: hidden; 
-  .no-commont {
-    position: fixed;
-    top: px2rem(200);
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  &.commont-enter-active,
-  &.commont-leave-active {
-    transition: all 0.4s ease;
-  }
-  &.commont-enter,
-  &.commont-leave-to {
-    transform: translateX(100%);
-  }
   font-size: $font-size-mm;
   width: 100%;
   height: 100%;
@@ -135,15 +124,30 @@ export default {
   left: 0;
   color: $text-color-l;
   z-index: 200;
+  .no-commont {
+    position: fixed;
+    top: px2rem(200);
+    left: 50%;
+    transform: translate(-50%,500%);
+  }
+  &.commont-enter-active,
+  &.commont-leave-active {
+    transition: all 0.4s ease;
+  }
+  &.commont-enter,
+  &.commont-leave-to {
+    transform: translateX(100%);
+  }
   .header {
     width: 100%;
     height: px2rem(48);
     line-height: px2rem(48);
     display: flex;
     position: relative;
+    color: #eee;
     .back {
       z-index: 10;
-      padding-left: 10px;
+      padding: 0 8px 0;
     }
     .title {
       position: absolute;
@@ -178,12 +182,14 @@ export default {
         position: absolute;
         top: 0;
         bottom: 60px;
+        padding-left: 20px;
         .loading-wrapper {
-          width: 100%;
-          line-height: 2;
+          width: 100vw;
           display: flex;
           justify-content: center;
+          height: 64px;
           align-items: center;
+          transform: translateX(-20px);
         }
         ul {
           width: 100%;

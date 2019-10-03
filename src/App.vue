@@ -64,10 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
   background-color: $bg-color;
   color: $text-color;
   .slide-enter, .slide-leave-to{
-    transform: translateY(100%);
+    opacity: 0;
   }
-  .slide-enter-active{
-    transition: all .3s;
+  .slide-enter-active, .slide-leave-active{
+    transition: opacity .5s linear;
   }
   .header-wrapper {
     padding: 5px 15px;

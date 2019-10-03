@@ -85,9 +85,10 @@ export default {
     scrolling(pos) {
       let y = Math.abs(pos.y);
       const { tops } = this;
-      tops.forEach((item, i) => {
+      tops.some((item, i) => {
         if (y >= item && y < tops[i + 1]) {
           this.currentIndex = i;
+          return true;
         }
       });
     },
@@ -191,18 +192,18 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     background-color: $theme-color-dd;
-    font-size: $font-size;
+    font-size: px2rem(10);
     padding: 15px 2px;
     border-radius: 20px;
     li {
-      height: 17px;
-      width: 15px;
+      height: 14px;
+      width: 12px;
       line-height: 17px;
       border-radius: 50%;
       position: relative;
       .big {
         position: absolute;
-        left: -380%;
+        left: -500%;
         font-size: $font-size-l;
         background-color: $theme-color-dd;
         color: $text-color;

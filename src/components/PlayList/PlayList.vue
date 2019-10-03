@@ -16,8 +16,8 @@
         </div>
         <div class="list">
           <scroll :data="playlist" ref="scroll">
-            <div>
-              <ul>
+            <div class="gr-w">
+              <transition-group tag="ul" name="gr">
                 <li
                   ref="list"
                   v-for="(song, index) in playlist"
@@ -35,12 +35,16 @@
                       <span class="artist">{{song.artist}}</span>
                     </span>
                   </div>
-                  <div>
-                    <i class="iconfont icon-favorite" :class="likeIcon(song)" @click.stop="_toggleFavorite(song)"></i>
-                    <i class="iconfont icon-download" @click.stop="deleteSong(index)"></i>
+                  <div class="btn">
+                    <span class="favorite" @click.stop="_toggleFavorite(song)">
+                      <i class="iconfont icon-favorite1" :class="likeIcon(song)"></i>
+                    </span>
+                    <span class="delete" @click.stop="deleteSong(index)">
+                      <i class="iconfont icon-download"></i>
+                    </span>
                   </div>
                 </li>
-              </ul>
+              </transition-group>
               <div class="add" @click="addToList">
                 <i class="iconfont icon-zengjia"></i>
                 <span>添加歌曲到队列</span>
@@ -57,10 +61,10 @@
 </template>
 
 <script>
-import { playMode } from '@/assets/js/config'
+import { playMode } from "@/assets/js/config";
 import { mapGetters, mapMutations, mapActions } from "vuex";
-import Dialog from '@/base/dialog/dialog.vue'
-import AddSong from '@/components/AddSong/AddSong.vue'
+import Dialog from "@/base/dialog/dialog.vue";
+import AddSong from "@/components/AddSong/AddSong.vue";
 export default {
   data() {
     return {
@@ -68,67 +72,72 @@ export default {
     };
   },
   computed: {
-    modeIcon(){
-        return this.mode === playMode.sequence ? 'icon-liebiaoxunhuan' : this.mode === playMode.random ? 'icon-suiji' : 'icon-danquxunhuan'
+    modeIcon() {
+      return this.mode === playMode.sequence
+        ? "icon-liebiaoxunhuan"
+        : this.mode === playMode.random
+        ? "icon-suiji"
+        : "icon-danquxunhuan";
     },
-    modeText(){
-        return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
+    modeText() {
+      return this.mode === playMode.sequence
+        ? "顺序播放"
+        : this.mode === playMode.random
+        ? "随机播放"
+        : "单曲循环";
     },
-    ...mapGetters(["playlist", "currentIndex","mode","favorite"])
+    ...mapGetters(["playlist", "currentIndex", "mode", "favorite"])
   },
   methods: {
     toggleList() {
       this.isShow = !this.isShow;
       if (this.isShow) {
-        this.timer = setTimeout(()=>{
+        this.timer = setTimeout(() => {
           this.$refs.scroll.scrollToElement(
             this.$refs.list[this.currentIndex],
             400
           );
-        },100);//66大顺，ojbk
+        }, 100); //66大顺，ojbk
       }
     },
-    play(i){
-        this.setCurrentIndex(i);
+    play(i) {
+      this.setCurrentIndex(i);
     },
     changeMode() {
       let mode = this.mode;
       mode = (mode + 1) % 3;
       this.setPlayMode(mode);
     },
-    clearTip(){
-        this.$refs.tip.show();
+    clearTip() {
+      this.$refs.tip.show();
     },
-    _clearPlaylist(){
-        this.clearPlaylist();
-        this.isShow = false;
+    _clearPlaylist() {
+      this.clearPlaylist();
+      this.isShow = false;
     },
-    likeIcon(song){
+    likeIcon(song) {
       let index = this.favorite.findIndex(item => {
         return item.rid == song.rid;
       });
-      if(index > -1){
-        return 'active'
-      }else{
-        return '';
+      if (index > -1) {
+        return "active";
+      } else {
+        return "";
       }
     },
-    addToList(){
+    addToList() {
       this.$refs.add.show();
     },
 
-
-
-
     ...mapMutations({
-        setPlayMode: 'SET_PLAYMODE',
-        setCurrentIndex: 'SET_CURRENTINDEX',
+      setPlayMode: "SET_PLAYMODE",
+      setCurrentIndex: "SET_CURRENTINDEX"
     }),
-    ...mapActions(['deleteSong','clearPlaylist','_toggleFavorite'])
+    ...mapActions(["deleteSong", "clearPlaylist", "_toggleFavorite"])
   },
-  components:{
-      Dialog,
-      AddSong,
+  components: {
+    Dialog,
+    AddSong
   }
 };
 </script>
@@ -182,7 +191,18 @@ export default {
       bottom: 60px;
       overflow: hidden;
       color: $text-color-l;
+      .gr-w {
+        .gr-enter,
+        .gr-leave-to {
+          opacity: 0;
+          transform: translate(0, 30px);
+        }
+      }
       li {
+        transition: all 0.3s;
+        &.gr-leave-active {
+          position: absolute;
+        }
         width: 100%;
         display: flex;
         height: 48px;
@@ -191,21 +211,41 @@ export default {
         padding: 0 15px;
         box-sizing: border-box;
         border-bottom: 1px solid $text-color-d;
-        .icon-favorite{
-          &.active{
+        .btn {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          .favorite,
+          .delete {
+            height: 48px;
+            padding: 0 5px;
+            .iconfont {
+              line-height: 48px;
+            }
+          }
+        }
+        .icon-favorite1 {
+          &.active {
             color: $theme-like;
           }
         }
-        &.curr{
-          .icon-Playing,.text{
+        &.curr {
+          .icon-Playing,
+          .text {
             color: $theme-color;
           }
         }
         .text {
+          //多行文本溢出省略
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
           .split {
             padding: 0 5px;
           }
           .artist {
+            width: 100%;
             font-size: $font-size-m;
             color: $text-color-d;
           }

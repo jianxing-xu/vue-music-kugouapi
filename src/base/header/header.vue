@@ -3,7 +3,7 @@
   <div class="header">
     <i class="iconfont icon-cx" @click="search"></i>
     <div class="logo">
-      <span class="text">Dark Music</span>
+      <span class="text">Make A Music</span>
     </div>
     <i class="iconfont icon-mine1" @click="mine"></i>
   </div>
@@ -32,13 +32,15 @@ export default {
   height: 30px;
   i {
     font-size: $font-size-l;
+    padding: 8px;
   }
   .logo{
       display: flex;
       align-items: center;
       .text{
-          font-size: $font-size-l;
-          font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+          font-size: $font-size;
+          font-family: Cabin;
+          font-weight: bolder;
       }
       img{
           display: inline-block;

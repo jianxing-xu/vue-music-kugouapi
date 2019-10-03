@@ -4,7 +4,7 @@
     <div class="scrollbar-wrapper">
       <ScrollBar :items="barItem" @selectItem="selectItem" />
     </div>
-    <div>
+    <div class="list">
       <keep-alive>
           <router-view @selectItem="selectMV"></router-view>
       </keep-alive>
@@ -21,7 +21,7 @@ import { getMVUrl } from "@/api/mv";
 import { mapMutations } from 'vuex'
 import Dialog from '@/base/dialog/dialog.vue'
 export default {
-    name: 'MV',
+  name: 'MV',
   data() {
     return {
       barItem: [
@@ -81,5 +81,17 @@ export default {
 .mv {
   width: 100%;
   height: 100%;
+  position: relative;
+  .list{
+    width: 100%;
+    position: fixed;
+    top: px2rem(114);
+    bottom:0;
+  }
+  .scrollbar-wrapper{
+    position: absolute;
+    width: 100%;
+    height: px2rem(30);
+  }
 }
 </style>

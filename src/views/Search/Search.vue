@@ -4,7 +4,7 @@
     <div class="search">
       <div class="header">
         <div class="back" @click="$router.back()">
-          <i class="iconfont icon-leftarrow"></i>
+          <i class="iconfont icon-fanhui"></i>
         </div>
         <div class="search-box-wrapper">
           <SearchBox ref="sb" @keyEmpty="keyEmpty" @exportKey="getKey" />
@@ -132,8 +132,9 @@ export default {
     opacity: 0;
     transform: scale(0.8);
   }
-  .scale-enter-active, .scale-leave-active{
+   .scale-leave-active, .scale-enter-active{
     transition: all .3s;
+    position: absolute;
   }
   .word {
     width: 100%;
@@ -173,7 +174,9 @@ export default {
     font-size: $font-size-mm;
     padding: 0 20px;
     box-sizing: border-box;
-
+    .icon-download{
+      font-size: $font-size-l;
+    }
     .h {
       h2 {
         font-size: $font-size-ll;
@@ -188,16 +191,10 @@ export default {
     }
     ul {
       transition: all 0.5s;
-      .gr-leave-active {
-        transition: all 0.5s ease;
-      }
       .gr-enter,
       .gr-leave-to {
         transform: translate(0, 100%);
         opacity: 0;
-      }
-      .gr-leave-active {
-        position: absolute;
       }
     }
     .his-item {
@@ -206,6 +203,13 @@ export default {
       line-height: 2.5;
       border-bottom: 1px solid $bg-hig-color;
       color: $text-color-d;
+      transition: all .3s;
+      &.gr-leave-active {
+				  position: absolute;
+      }
+      .iconfont{
+        font-size: $font-size-l;
+      }
     }
     .title {
       color: $text-color-d;
@@ -250,7 +254,7 @@ export default {
   }
   .back {
     .iconfont {
-      font-size: 25px;
+      font-size: $font-size-ll;
     }
     color: $text-color-d;
     padding: 0 15px 0 10px;

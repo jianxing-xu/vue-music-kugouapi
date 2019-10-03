@@ -4,11 +4,11 @@
     <div class="detail" v-if="showMV && mv.id">
       <div class="header">
         <div class="back" @click="hide">
-          <i class="iconfont icon-leftarrow"></i>
+          <i class="iconfont icon-fanhui"></i>
         </div>
-        <div class="video-wrapper" @click="showMask">
+        <div class="video-wrapper" @click.stop="showMask">
           <div class="play" v-show="isMask">
-            <i class="iconfont" :class="playIcon()" @click="togglePlaying"></i>
+            <i   class="iconfont" :class="playIcon()" @click="togglePlaying"></i>
             <div class="progress-wrapper">
               <span class="current-time">{{formatTime(currentTime)}}</span>
               <Progress :percent="percent" @barTouchEnd="barTouchEnd" />
@@ -118,7 +118,7 @@ export default {
       this.$refs.video.currentTime = this.mv.duration * percent;
     },
     showMask() {
-      this.isMask = true;
+      this.isMask = !this.isMask;
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.isMask = false;
@@ -179,6 +179,7 @@ export default {
       position: absolute;
       top: 0px;
       left: 15px;
+      padding:5px 10px;
     }
     .video-wrapper {
       height: 100%;
@@ -202,10 +203,12 @@ export default {
           bottom: 15px;
           display: flex;
           align-items: center;
-          justify-content: space-around;
+          justify-content: center;
           .current-time,
           .duration {
-            padding: 0 20px;
+            padding: 0 10px;
+            font-size: $font-size;
+            font-family:'Times New Roman', Times, serif;
           }
         }
         font-size: $font-size-mm;

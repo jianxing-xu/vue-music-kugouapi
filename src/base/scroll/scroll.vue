@@ -9,6 +9,14 @@
 import BScroll from "better-scroll";
 export default {
   props: {
+    bounce:{
+      type: Boolean,
+      default: false
+    },
+    bounceTime: {
+      type: Number,
+      default: 700
+    },
     probeType: {
       type: Number,
       default: 1
@@ -62,7 +70,9 @@ export default {
         probeType: this.probeType,
         click: this.click,
         scrollX: this.scrollX,
-        scrollY: !this.scrollX
+        scrollY: !this.scrollX,
+        bounce: this.bounce,
+        bounceTime: this.bounceTime
       });
       //监听滚动到底部后，派发事件
       if (this.purpul) {
