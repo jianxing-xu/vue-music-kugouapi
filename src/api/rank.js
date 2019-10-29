@@ -1,19 +1,37 @@
-import axios from 'axios'
+/**
+ * 歌曲排行版的相关数据接口
+ */
 
-export function getRank(){
-    return axios.get('http://www.kuwo.cn/api/www/bang/bang/bangMenu').then( res => {
+import axios from 'axios' /** 导入axios库 */
+
+/**
+ * 获取排行榜列表数据方法
+ */
+export function getRank() {
+    return axios.get('/getRank', {
+        headers: {
+            csrf: document.cookie.slice(9)
+        },
+    }).then(res => {
         return Promise.resolve(res.data);
     })
 }
+/**
+ * 通过榜单的id标识 获取到每个榜单的 歌曲列表方法
+ * @param {*} bangId 每个榜单的id标识
+ */
 
-export function getBangSongs(bangId){
-    return axios.get('http://www.kuwo.cn/api/www/bang/bang/musicList',{
-        params:{
+export function getBangSongs(bangId) {
+    return axios.get('/getBangSongs', {
+        headers: {
+            csrf: document.cookie.slice(9)
+        },
+        params: {
             bangId,
-            pn:1,
-            rn:100
+            pn: 1,   /** 此处固定页数位第一页，每页的数据为 100 条 */
+            rn: 100
         }
-    }).then (res => {
+    }).then(res => {
         return Promise.resolve(res.data);
     })
 }

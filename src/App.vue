@@ -19,6 +19,7 @@ import Header from "@/base/header/header.vue";
 import Tab from "@/base/tab/tab.vue";
 import Player from "@/components/Player/Player.vue";
 import { mapGetters } from "vuex";
+import {getSongUrl} from '@/api/song'
 export default {
   data() {
     return {
@@ -42,6 +43,12 @@ export default {
         path: '/mine'
       })
     }
+  },
+  created () {
+    /**
+     * 在 APP 创建之后 执行一次 得到cookie 以方便接下来的请求
+     */
+    getSongUrl();
   },
   components: {
     Header,

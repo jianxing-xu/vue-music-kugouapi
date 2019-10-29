@@ -1,3 +1,7 @@
+/**
+ * 歌手类
+ */
+
 export class Singer {
     constructor({name,fans,id,musicNum,mvNum,pic,pic70,pic120,pic300}){
         this.name = name;

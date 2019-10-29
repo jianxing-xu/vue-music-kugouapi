@@ -1,8 +1,15 @@
-import axios from 'axios'
+/**
+ * 首页的相关数据接口方法
+ */
 
+import axios from 'axios' /** 导入axios库 */
+
+/**
+ * 获取QQ音乐的轮播图数据
+ */
 export function getSlider() {
     return axios.get('/getSlider', {
-        params: {
+        params: {   /** 和qq音乐保持一致的get参数 */
             g_tk: 5381,
             uin: 0,
             format: 'json',
@@ -17,6 +24,10 @@ export function getSlider() {
     });
 }
 
+/**
+ * 获取歌单列表
+ * @param {*} page 要获取的页数
+ */
 export function getDisc(page){
     return axios.get(`http://www.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=${page}&rn=30&order=new`).then( res =>{
         return Promise.resolve(res.data);

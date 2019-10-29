@@ -1,3 +1,6 @@
+/**
+ * 配置
+ */
 export const playMode = {
     sequence: 0,
     random: 1,
