@@ -47,22 +47,23 @@ export default {
       if (!this.toProgress) {
         return;
       }
-      this.touchs.startX = e.touches[0].pageX;
-      // let pos = e.touches[0].pageX - e.target.getBoundingClientRect().left;
-      // let percent = pos/this.barWidth;
-      // this.$emit('barTouchEnd',percent);
+      this.touchs.startX = e.changedTouches[0].pageX;
     },
     touchmove(e) {
       if (!this.toProgress) {
         return;
       }
-      this.down = true;
-      let delta = e.touches[0].pageX - this.touchs.startX;
-      let target = this.progress + delta;
-      this.touchs.target = target;
-      this._offsetWidth(target);
+      try {
+        this.down = true;
+        let delta = e.changedTouches[0].pageX - this.touchs.startX;
+        let target = this.progress + delta;
+        this.touchs.target = target;
+        this._offsetWidth(target);
+      } catch (error) {
+        console.log('error:'+error);
+      }
     },
-    touchend(e) {
+    touchend() {
       if (!this.down) {
         return;
       }
@@ -73,7 +74,7 @@ export default {
       this.$refs.innerBar.style.width =
         Math.min(Math.max(progress, 0), this.barWidth) + "px";
       this.$refs.btn.style["transform"] = `translate3d(${Math.max(
-        Math.min(progress, this.barWidth)-6,
+        Math.min(progress, this.barWidth) - 6,
         0
       )}px,-50%,0)`;
     }
@@ -123,10 +124,10 @@ export default {
         width: 6px;
         height: 6px;
         background-color: $theme-color;
-        position:absolute;
+        position: absolute;
         left: 50%;
         top: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
         transition: all 0.4s;
         &.active {
           width: 20px;

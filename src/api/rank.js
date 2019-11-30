@@ -3,14 +3,14 @@
  */
 
 import axios from 'axios' /** 导入axios库 */
-
+import {formatTonken} from "@/assets/js/util"
 /**
  * 获取排行榜列表数据方法
  */
 export function getRank() {
     return axios.get('/getRank', {
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
     }).then(res => {
         return Promise.resolve(res.data);
@@ -24,7 +24,7 @@ export function getRank() {
 export function getBangSongs(bangId) {
     return axios.get('/getBangSongs', {
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params: {
             bangId,

@@ -25,13 +25,13 @@ export default {
     align-items:center;
     color: $text-color-l;
     text-align:center;
+    height: px2rem(30);
     .tab-item{
         box-sizing: border-box;
         flex: 1;
-        line-height: 2.5;
+        line-height: px2rem(30);
         &.router-link-active{
             color: $theme-color !important;
-            font-size: $font-size-mm;
         }
     }
 }

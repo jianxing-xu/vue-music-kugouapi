@@ -3,7 +3,7 @@
  */
 
 import axios from 'axios'   /** 导入 axios 请求库 */
-import jsonp from 'jsonp'
+import {formatTonken} from "@/assets/js/util"
 
 /**
  * 根据分类id 获取mv的列表方法
@@ -22,7 +22,7 @@ export function getMVList(pid, page) {
     // })
     return axios.get('/getMVList', {
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params: {
             pid,

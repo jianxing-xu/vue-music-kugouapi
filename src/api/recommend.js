@@ -4,20 +4,24 @@
 
 import axios from 'axios' /** 导入axios库 */
 
+import {formatTonken} from "@/assets/js/util"
 /**
  * 获取QQ音乐的轮播图数据
  */
 export function getSlider() {
     return axios.get('/getSlider', {
-        params: {   /** 和qq音乐保持一致的get参数 */
-            g_tk: 5381,
-            uin: 0,
-            format: 'json',
-            inCharset: 'utf-8',
-            outCharset: 'utf-8',
-            notice: 0,
-            platform: 'h5',
-            needNewCode: 1,
+        // params: {   /** 和qq音乐保持一致的get参数 */
+        //     g_tk: 5381,
+        //     uin: 0,
+        //     format: 'json',
+        //     inCharset: 'utf-8',
+        //     outCharset: 'utf-8',
+        //     notice: 0,
+        //     platform: 'h5',
+        //     needNewCode: 1,
+        // }
+        headers:{
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie),
         }
     }).then(res => {
         return Promise.resolve(res.data);

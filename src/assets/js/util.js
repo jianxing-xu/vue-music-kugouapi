@@ -44,14 +44,32 @@ export function random(start, end, fixed = 0) {
 }
 
 /** 防抖函数 */
-export function debounce(fn,delay) {
-    let timer ;
+export function debounce(fn, delay) {
+    let timer;
     return (...args) => {
-        if(timer){
+        if (timer) {
             clearTimeout(timer);
         }
         timer = setTimeout(() => {
-            fn.apply(this,args);
+            fn.apply(this, args);
         }, delay);
     }
+}
+
+export function throttle(fn, delay = 1000) {
+    let pre = Date.now();
+    return function () {
+        let now = Date.now();
+        if (now - pre > delay) {
+            fn.apply(this, [...arguments]);
+            pre = now;
+        }
+    }
+}
+
+export function formatTonken(token) {
+    var reg = /kw_token=\w{10,}/g;
+    var t = token.match(reg)[0];
+    var i = t.indexOf('=');
+    return t.slice(i + 1);
 }

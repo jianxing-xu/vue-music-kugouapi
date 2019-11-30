@@ -105,7 +105,7 @@ export default {
     overflow: hidden;
     width: 100%;
     position: fixed;
-    top: px2rem(90);
+    top: px2rem(65);
     bottom: 0;
     padding: 0 15px;
     box-sizing: border-box;

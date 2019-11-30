@@ -61,8 +61,8 @@ export default {
   methods: {
     _getSlider() {
       getSlider().then(res => {
-        if (res.code === 0) {
-          this.sliders = res.data.slider;
+        if (res.code === 200) {
+          this.sliders = res.data;
         }
       });
     },
@@ -132,7 +132,7 @@ export default {
   .content {
     width: 100%;
     position: fixed;
-    top: px2rem(90);
+    top: px2rem(65);
     bottom: 0;
     overflow: hidden;
     .scroll {

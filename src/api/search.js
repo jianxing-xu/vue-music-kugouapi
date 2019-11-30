@@ -3,7 +3,7 @@
  */
 
 import axios from 'axios' /** 导入 axios 库 */
-
+import {formatTonken} from "@/assets/js/util"
 /**
  * 通过关键字获取联想建议词
  * @param {*} key 关键字
@@ -11,7 +11,7 @@ import axios from 'axios' /** 导入 axios 库 */
 export function getSuggestKey(key) {
     return axios.get('/getSuggestKey',{
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params:{
             key
@@ -30,7 +30,7 @@ export function getSuggestKey(key) {
 export function getMusicByKey(key, pn, rn) {
     return axios.get('/getMusicByKey', {
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params: {
             key,
@@ -47,7 +47,7 @@ export function getMusicByKey(key, pn, rn) {
 export function getArtistByKey(key, pn, rn) {
     return axios.get('/getArtistByKey', {
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params: {
             key,

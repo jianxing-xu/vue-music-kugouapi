@@ -19,10 +19,13 @@ import Header from "@/base/header/header.vue";
 import Tab from "@/base/tab/tab.vue";
 import Player from "@/components/Player/Player.vue";
 import { mapGetters } from "vuex";
-import {getSongUrl} from '@/api/song'
+import { getSongUrl } from "@/api/song";
+import { throttle } from "@/assets/js/util";
+
 export default {
   data() {
     return {
+      load: 0,
       tabItem: [
         { name: "推荐", url: "/recommend" },
         { name: "歌手", url: "/singer" },
@@ -34,21 +37,35 @@ export default {
   computed: {
     ...mapGetters(["playlist"])
   },
-  methods:{
-    search(){
-      this.$router.push('/search');
+  methods: {
+    search() {
+      this.$router.push("/search");
     },
-    selectMine(){
+    selectMine() {
       this.$router.push({
-        path: '/mine'
-      })
+        path: "/mine"
+      });
+    },
+    reset() {
+      if (window.orientation === 90 && this.load === 1) {
+        return;
+      }
+      const html = document.documentElement;
+      let fontSize = window.innerWidth / 10;
+      fontSize = fontSize > 40 ? 40 : fontSize;
+      html.style.fontSize = fontSize + "px";
+      if(this.load===0){
+        this.load++;
+      }
     }
   },
-  created () {
+  created() {
     /**
      * 在 APP 创建之后 执行一次 得到cookie 以方便接下来的请求
      */
     getSongUrl();
+    document.addEventListener("DOMContentLoaded", this.reset);
+    window.addEventListener("resize", throttle(this.reset, 120));
   },
   components: {
     Header,
@@ -56,12 +73,6 @@ export default {
     Player
   }
 };
-document.addEventListener("DOMContentLoaded", () => {
-  const html = document.querySelector("html");
-  let fontSize = window.innerWidth / 10;
-  fontSize = fontSize > 60 ? 60 : fontSize;
-  html.style.fontSize = fontSize + "px";
-});
 </script>
 
 <style lang="scss">
@@ -70,14 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
   height: 100%;
   background-color: $bg-color;
   color: $text-color;
-  .slide-enter, .slide-leave-to{
+  .slide-enter,
+  .slide-leave-to {
     opacity: 0;
   }
-  .slide-enter-active, .slide-leave-active{
-    transition: opacity .5s linear;
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: opacity 0.5s linear;
   }
   .header-wrapper {
-    padding: 5px 15px;
+    padding: 0px 15px;
   }
 }
 </style>

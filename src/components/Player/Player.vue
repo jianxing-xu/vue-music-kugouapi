@@ -76,7 +76,7 @@
               <i class="iconfont icon-kuaijin"></i>
             </div>
             <div class="favorite" @click="_favorite">
-              <i class="iconfont icon-favorite1" :class="likeIcon(currentSong)"></i>
+              <i class="iconfont icon-xihuan2" :class="likeIcon(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -113,15 +113,15 @@
       @ended="playEnd"
       @error="error"
     ></audio>
-    <transition name="com-wrap" >
+    <transition name="com-wrap">
       <div class="commont-wrapper" v-show="clickCommont">
-      <Commont
-        @hideCommont="hideCommont"
-        ref="commont"
-        :commont="currentSong.commont || {}"
-        @scrollToEnd="scrollToEnd"
-        :ani="'no-commont'"
-      />
+        <Commont
+          @hideCommont="hideCommont"
+          ref="commont"
+          :commont="currentSong.commont || {}"
+          @scrollToEnd="scrollToEnd"
+          :ani="'no-commont'"
+        />
       </div>
     </transition>
     <Dialog ref="dialog" ok="下一首" @handleOK="next" cancel msg="此歌曲暂时无法播放" />
@@ -295,7 +295,7 @@ export default {
         return item.rid == song.rid;
       });
       if (index > -1) {
-        return "active";
+        return "active icon-xihuan1";
       } else {
         return "";
       }
@@ -321,19 +321,21 @@ export default {
   },
   created() {
     let _this = this;
+    document.addEventListener("DOMContentLoaded", reset);
     window.addEventListener(
       "onorientationchange" in window ? "orientationchange" : "resize",
-      function() {
-        if (window.orientation === 180 || window.orientation === 0) {
-          _this.horizontal = false;
-        }
-        if (window.orientation === 90 || window.orientation === -90) {
-          _this.horizontal = true;
-        }
-        this.swiper && this.swiper.updateSize();
-      },
+      reset,
       false
     );
+    function reset() {
+      if (window.orientation === 180 || window.orientation === 0) {
+        _this.horizontal = false;
+      }
+      if (window.orientation === 90 || window.orientation === -90) {
+        _this.horizontal = true;
+      }
+      this.swiper && this.swiper.updateSize();
+    }
   },
   computed: {
     playIcon() {
@@ -386,7 +388,7 @@ export default {
               song.url = res.url;
               clearTimeout(this.timer);
               this.timer = setTimeout(() => {
-                this.$refs.audio  
+                this.$refs.audio
                   .play()
                   .then(() => {
                     this.setPlaying(true);
@@ -394,8 +396,8 @@ export default {
                     this.toProgress = true;
                   })
                   //catch 捕获某些浏览器播放异常的时候 需要手动播放
-                  .catch(e => {
-                    console.log('播放异常');
+                  .catch(() => {
+                    console.log("播放异常");
                     this.getLyric(song.lyric);
                     this.setPlaying(false);
                     this.onReady = true;
@@ -404,7 +406,7 @@ export default {
               }, 1000);
               this._savePlayHis(song);
             })
-            .catch(err => {
+            .catch(() => {
               this.onReady = true;
               this.$refs.dialog.show();
             });
@@ -422,7 +424,7 @@ export default {
       });
     }
   },
-  destroyed () {
+  destroyed() {
     this.lyric && this.lyric.stop();
     this.lyric = null;
   },
@@ -462,10 +464,11 @@ export default {
       height: 100%;
       transform: scale(1.1);
       z-index: -1;
-      filter: blur(20px);
+      filter: blur(10px);
+      backdrop-filter: blur(10px);
       background: rgba(0, 0, 0, 1);
       img {
-        opacity: 0.7;
+        opacity: .7;
       }
     }
     .header {
@@ -639,7 +642,7 @@ export default {
     }
     &.slide-enter,
     &.slide-leave-to {
-      opacity: 0;
+      transform: translate(0,100%,0);
     }
     .mini-cd {
       height: 100%;

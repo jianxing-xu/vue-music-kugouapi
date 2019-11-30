@@ -63,6 +63,7 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   font-size: $font-size-mm;
   color: $text-color-ll;
@@ -118,7 +119,7 @@ export default {
     transform: scale(0);
   }
   50% {
-    transform: scale(1.14);
+    transform: scale(1.05);
   }
   100% {
     transform: scale(1);

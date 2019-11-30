@@ -29,7 +29,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 30px;
+  font-weight: bold;
+  height: px2rem(30);
   i {
     font-size: $font-size-l;
     padding: 8px;

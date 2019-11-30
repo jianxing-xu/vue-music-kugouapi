@@ -137,7 +137,7 @@ export default {
   position: relative;
   .fix-title {
     position: fixed;
-    top: px2rem(89);
+    top: px2rem(65);
     width: 100%;
     color: $text-color-l;
     padding-left: 15px;
@@ -156,7 +156,7 @@ export default {
     left: 0;
     right: 0;
     position: fixed;
-    top: px2rem(90);
+    top: px2rem(65);
     bottom: 0;
     overflow: hidden;
     .singer-group {

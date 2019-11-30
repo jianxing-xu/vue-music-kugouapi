@@ -5,24 +5,8 @@
       <div class="back" @click="$router.back()">
         <i class="iconfont icon-fanhui"></i>
       </div>
-      <div class="title">
+      <div class="title" ref="title">
         <h2 v-html="info.name"></h2>
-      </div>
-    </div>
-    <div class="filter" :style="bgImg" ref="bgImg"></div>
-    <div class="filter"></div>
-    <div class="content" ref="content">
-      <div class="avatar">
-        <img :src="info.pic300 || info.img || info.pic || require('@/assets/img/default.jpeg')" />
-      </div>
-      <div class="info">
-        <span class="name" v-html="info.name"></span>
-        <span class="fans-num" v-if="!info.sourceid">歌曲数：{{info.musicNum || info.total}}</span>
-        <span class="fans-num" v-else>{{info.pub}}</span>
-        <div class="playAll" @click="_randomAll">
-          <i class="iconfont icon-zanting"></i>
-          <span class="text">随机全部</span>
-        </div>
       </div>
     </div>
     <div class="list" ref="list">
@@ -35,6 +19,24 @@
         :scroller="scrolling"
       >
         <div>
+          <div class="content" ref="content">
+            <div class="filter" :style="bgImg" ref="bgImg"></div>
+          <div class="filter"></div>
+            <div class="avatar">
+              <img
+                :src="info.pic300 || info.img || info.pic || require('@/assets/img/default.jpeg')"
+              />
+            </div>
+            <div class="info">
+              <span class="name" v-html="info.name"></span>
+              <span class="fans-num" v-if="!info.sourceid">歌曲数：{{info.musicNum || info.total}}</span>
+              <span class="fans-num" v-else>{{info.pub}}</span>
+              <div class="playAll" @click="_randomAll">
+                <i class="iconfont icon-zanting"></i>
+                <span class="text">随机全部</span>
+              </div>
+            </div>
+          </div>
           <SongList :songs="songs" @selectItem="selectItem" />
           <div class="loading-wrapper" v-if="!songs.length">
             <loading />
@@ -105,28 +107,11 @@ export default {
       this._pullY(y);
     },
     _pullY(y) {
-      if (y >= -30) {
-        if (this.$refs.content.style.zIndex != 10) {
-          this.$refs.content.style.zIndex = 10;
-        }
-        //不要缩放
-        // let scale = 1 + y / this.bgH;
-        // this.$refs.bgImg.style["transform"] = `scale(${scale})`;
-      } else {
-        if (this.$refs.content.style.zIndex != 0) {
-          this.$refs.content.style.zIndex = 0;
-        }
-        if (y < -(this.bgH - this.headerH)) {
-          if (this.$refs.list.style.top != this.headerH) {
-            this.$refs.list.style.top = this.headerH + "px";
-            this.$refs.list.style.paddingTop = this.bgH - this.headerH + "px";
-          }
-        } else {
-          if (this.$refs.list.style.top != "0") {
-            this.$refs.list.style.top = "0";
-            this.$refs.list.style.paddingTop = "60%";
-          }
-        }
+      y = Math.abs(y);
+      if(y/(y+150)==0.498)return;
+      if(y<150){
+        this.$refs.header.style.background = `rgba(0,0,0,${Math.min(y/(y+100),0.5)})`;
+        this.$refs.title.style.opacity = `${y/(y+150)}`;
       }
     },
     selectItem(song, index) {
@@ -216,6 +201,7 @@ export default {
     line-height: px2rem(48);
     display: flex;
     z-index: 50;
+    backdrop-filter: blur(5px);
     .back {
       padding: 0 15px 0;
     }
@@ -228,20 +214,24 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      opacity: 0;
     }
   }
-  .filter {
-    width: 100%;
-    padding-top: 60%;
-    filter: blur(20px);
-  }
   .content {
-    position: absolute;
+    position: relative;
     top: 0;
-    padding-top: 20%;
+    padding: px2rem(48) 0 20px;
     display: flex;
     align-items: center;
     z-index: 10;
+    overflow: hidden;
+    .filter {
+      z-index: -1;
+      position: absolute;
+      width: 100%;
+      filter: blur(20px);
+      height: 100%;
+    }
     .info {
       height: 100%;
       display: flex;
@@ -294,10 +284,10 @@ export default {
       transform: translate(-50%, -50%);
     }
     width: 100%;
-    padding: 15px 0 0 0;
+    // padding: 15px 0 0 0;
     position: fixed;
     top: px2rem(0);
-    padding-top: 60%;
+    // padding-top: 60%;
     bottom: 0;
     overflow: hidden;
   }

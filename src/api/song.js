@@ -3,7 +3,7 @@
  */
 
 import axios from 'axios' /** 导入 axios */
-
+import {formatTonken} from "@/assets/js/util"
 /**
  * 根据歌曲的 rid标识获取到歌曲的播放地址(url)
  * @param {*} rid 歌曲的rid标识
@@ -67,7 +67,7 @@ export function getCommont(digest,sid,page){
 export function getDiscSongs(pid){
     return axios.get('/getDiscSongs',{
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params:{
             pid,

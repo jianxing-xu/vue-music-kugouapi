@@ -3,14 +3,14 @@
  */
 
 import axios from 'axios' /** 导入 axios */
-
+import {formatTonken} from "@/assets/js/util"
 /**
  * 获取歌手列表方法
  */
 export function getSingerList(){
     return axios.get('/getSingerList',{
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params:{
             category: 0,
@@ -28,7 +28,7 @@ export function getSingerList(){
 export function getSongsById(id){
     return axios.get('/getSongsById',{
         headers: {
-            csrf: document.cookie.slice(9)
+            csrf: process.env.NODE_ENV === "development" ? document.cookie.slice(9) : formatTonken(document.cookie)
         },
         params:{
             artistid:id,

@@ -37,7 +37,7 @@
                   </div>
                   <div class="btn">
                     <span class="favorite" @click.stop="_toggleFavorite(song)">
-                      <i class="iconfont icon-favorite1" :class="likeIcon(song)"></i>
+                      <i class="iconfont icon-xihuan2" :class="likeIcon(song)"></i>
                     </span>
                     <span class="delete" @click.stop="deleteSong(index)">
                       <i class="iconfont icon-download"></i>
@@ -120,7 +120,7 @@ export default {
         return item.rid == song.rid;
       });
       if (index > -1) {
-        return "active";
+        return "active icon-xihuan1";
       } else {
         return "";
       }
@@ -224,7 +224,7 @@ export default {
             }
           }
         }
-        .icon-favorite1 {
+        .icon-xihuan2 {
           &.active {
             color: $theme-like;
           }

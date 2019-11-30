@@ -17,7 +17,7 @@
           @click.stop="randomAll(current==0?normalSongs(favorite):normalSongs(played))"
         >
           <i class="iconfont icon-zanting"></i>
-          <span>随机播放全部</span>
+          <span>播放全部</span>
         </div>
       </div>
       <div class="list" ref="list">
@@ -127,12 +127,25 @@ export default {
   left: 0;
   background-color: $bg-color;
   font-size: $font-size-mm;
+  .play-all {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: $text-color-d;
+      line-height: 30px;
+      .btn {
+        .iconfont {
+          padding-right: 4px;
+        }
+      }
+    }
   .list {
     position: fixed;
     top: 106px;
     bottom: 0;
     width: 100%;
-    padding: 15px;
+    padding: 0 15px 15px;
     box-sizing: border-box;
     overflow: hidden;
     .empty {
@@ -199,19 +212,6 @@ export default {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-    }
-  }
-  .play-all {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: $text-color-d;
-    line-height: 30px;
-    .btn {
-      .iconfont {
-        padding-right: 4px;
-      }
     }
   }
   .switch-wrapper {

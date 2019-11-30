@@ -3,8 +3,8 @@
   <div class="swiper-container" ref="swiper" v-if="images.length">
     <div class="swiper-wrapper">
       <div class="swiper-slide" v-for="(img, index) in images" :key="index">
-        <a :href="img.linkUrl">
-          <img :src="img.picUrl" alt />
+        <a :href="img.url">
+          <img :src="img.pic" alt />
         </a>
       </div>
     </div>
@@ -56,6 +56,7 @@ export default {
   width:100%;
   img{
     width:100%;
+    height: 100%;
   }
 }
 </style>

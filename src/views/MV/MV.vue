@@ -85,7 +85,7 @@ export default {
   .list{
     width: 100%;
     position: fixed;
-    top: px2rem(114);
+    top: px2rem(95);
     bottom:0;
   }
   .scrollbar-wrapper{

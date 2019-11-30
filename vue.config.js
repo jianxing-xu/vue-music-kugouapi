@@ -6,6 +6,7 @@ module.exports = {
     /**
      * 开发环境反向代理 跨域配置项
      */
+    publicPath: process.env.NODE_ENV === 'production' ? '/music/' : '/',
     devServer: {
         host: '192.168.2.140',
         disableHostCheck: true,
@@ -104,14 +105,14 @@ module.exports = {
 
 
 
-            '/getSlider': { /**QQ 音乐轮播图接口 */
-                target: 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg',
+            '/getSlider': { /**QQ 音乐轮播图接口失效  换用酷我接口 */
+                target: 'http://www.kuwo.cn/api/www/banner/index/bannerList?reqId=126ac700-133a-11ea-b87e-c715e0d116d1',
                 secure: true,
                 changeOrigin: true,
-                bypass: function (req, res, proxyOptions) {
-                    req.headers.referer = 'https://c.y.qq.com';
-                    req.headers.host = 'c.y.qq.com';
-                },
+                // bypass: function (req, res, proxyOptions) {
+                //     req.headers.referer = 'https://c.y.qq.com';
+                //     req.headers.host = 'c.y.qq.com';
+                // },
                 pathRewrite: {
                     '/getSlider': ''
                 }
