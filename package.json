@@ -28,7 +28,7 @@
     "fastclick": "^1.0.6",
     "good-storage": "^1.1.0",
     "lyric-parser": "^1.0.1",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.13.1",
     "pinyin": "^2.9.0",
     "sass-loader": "^7.1.0",
     "swiper": "^4.5.0",
